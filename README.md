@@ -1,3 +1,23 @@
+## 项目说明
+### 开发环境搭建
+#### 依赖包安装
+```bash
+ pip install -r requirements.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+```
+#### 数据库环境准备
++ 准备好docker环境
++ 运行命令，启动最新MySQL数据库服务
+    ```bash
+    docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mariadb -p 3306:3306 -d mysql
+    ```
++ 在MySQL数据库中创建schema
+    ```sql
+    CREATE DATABASE IF NOT EXISTS stock_data CHARACTER SET utf8 COLLATE utf8_general_ci
+    ```
++ 修改`sqlalchemy`源码，支持数据的重复性插入，`~/python/stock/venv/lib`是使用python的目录，根据各自的环境修改
+    ```
+    sed -i -e 's/text = "INSERT "/text = "INSERT IGNORE "/g' ~/python/stock/venv/lib/python3.7/site-packages/sqlalchemy/sql/compiler.py
+    ```
 ### 使用方法（依赖docker）
 
 已经放到docker hub上了
