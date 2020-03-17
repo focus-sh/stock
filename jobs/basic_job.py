@@ -72,27 +72,47 @@ def stat_all(tmp_datetime):
 
 # 创建新数据库。
 def create_new_database():
-    with MySQLdb.connect(common.MYSQL_HOST, common.MYSQL_USER, common.MYSQL_PWD, "mysql", charset="utf8") as db:
-        try:
-            create_sql = " CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci " % common.MYSQL_DB
-            print(create_sql)
-            db.execute(create_sql)
-        except Exception as e:
-            print("error CREATE DATABASE :", e)
+    [connection, cursor] = [None, None]
+    try:
+        connection = MySQLdb.connect(common.MYSQL_HOST, common.MYSQL_USER, common.MYSQL_PWD, charset="utf8")
+        cursor = connection.cursor()
+        create_sql = " CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci " % common.MYSQL_DB
+        print(create_sql)
+        cursor.execute(create_sql)
+    except Exception as e:
+        print("error CREATE DATABASE :", e)
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
 
 
 # main函数入口
 if __name__ == '__main__':
-
+    [connection, cursor] = [None, None]
     # 检查，如果执行 select 1 失败，说明数据库不存在，然后创建一个新的数据库。
     try:
-        with MySQLdb.connect(common.MYSQL_HOST, common.MYSQL_USER, common.MYSQL_PWD, common.MYSQL_DB,
-                             charset="utf8") as db:
-            db.execute(" select 1 ")
+        connection = MySQLdb.connect(
+            common.MYSQL_HOST,
+            common.MYSQL_USER,
+            common.MYSQL_PWD,
+            common.MYSQL_DB,
+            charset="utf8"
+        )
+
+        cursor = connection.cursor()
+        cursor.execute(" select 1 ")
     except Exception as e:
         print("check  MYSQL_DB error and create new one :", e)
         # 检查数据库失败，
         create_new_database()
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
+
     # 执行数据初始化。
     # 使用方法传递。
     tmp_datetime = common.run_with_args(stat_all)

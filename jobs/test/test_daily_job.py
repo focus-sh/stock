@@ -4,7 +4,7 @@ from datetime import date
 from jobs.daily_job import stat_all
 
 
-class DailyJobTestSuites(unittest.TestCase):
+class TestDailyJob(unittest.TestCase):
 
     def test_can_use_unittest_frame(self):
         self.assertEqual(1+1, 2)

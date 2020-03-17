@@ -3,10 +3,7 @@ import unittest
 from jobs.basic_job import stat_all
 
 
-class BasicJobTestSuites(unittest.TestCase):
-
-    def test_can_use_unittest_frame(self):
-        self.assertEqual(1+1, 2)
+class TestBasicJob(unittest.TestCase):
 
     @staticmethod
     def test_can_run_stat_all_job():
