@@ -1,23 +1,39 @@
 ## 项目说明
 ### 开发环境搭建
 #### 依赖包安装
-```bash
- pip install -r requirements.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
-```
++ 安装依赖(Mac OS)：
+    ```bash
+      brew install mysql
+      brew install ta-lib
+      pip install -r requirements.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+    ```
++ 调整依赖包源码
+   ```bash
+    # 设置python库文件目录
+    SITE_PACKAGES=/Users/weshare/python/stock/venv/lib/python3.7/site-packages
+    # 支持插入数据时忽略在数据库中已经存在的数据
+    sed -i -e 's/executemany(statement/executemany(statement.replace\("INSERT INTO","INSERT IGNORE INTO")/g' \
+        $SITE_PACKAGES/sqlalchemy/dialects/mysql/mysqldb.py
+    # torndb支持python3
+    sed -i -e 's/itertools\.izip/zip/g' $SITE_PACKAGES/torndb.py
+    sed -i -e 's/\+ CONVERSIONS\[field_type\]/\+ \[CONVERSIONS\[field_type\],bytes\]/g' $SITE_PACKAGES/torndb.py
+   ```  
+
 #### 数据库环境准备
 + 准备好docker环境
 + 运行命令，启动最新MySQL数据库服务
     ```bash
-    docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mariadb -p 3306:3306 -d mysql
+    docker run --name mariadb -e MYSQL_ROOT_PASSWORD=mariadb -p 3306:3306 -d mariadb:latest
     ```
 + 在MySQL数据库中创建schema
     ```sql
     CREATE DATABASE IF NOT EXISTS stock_data CHARACTER SET utf8 COLLATE utf8_general_ci
     ```
-+ 修改`sqlalchemy`源码，支持数据的重复性插入，`~/python/stock/venv/lib`是使用python的目录，根据各自的环境修改
-    ```
-    sed -i -e 's/text = "INSERT "/text = "INSERT IGNORE "/g' ~/python/stock/venv/lib/python3.7/site-packages/sqlalchemy/sql/compiler.py
-    ```
+
+#### 本地启动应用
++ web应用的入口在：web/main.py文件，运行该文件
++ 本地访问地址：http://localhost:9999
+
 ### 使用方法（依赖docker）
 
 已经放到docker hub上了

@@ -12,7 +12,3 @@ class DailyJobTestSuites(unittest.TestCase):
     @staticmethod
     def test_can_run_stat_all_job():
         stat_all(date.fromisoformat('2020-03-13'))  # should not raise
-
-
-if __name__ == '__main__':
-    unittest.main()

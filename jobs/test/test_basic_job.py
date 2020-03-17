@@ -11,7 +11,3 @@ class BasicJobTestSuites(unittest.TestCase):
     @staticmethod
     def test_can_run_stat_all_job():
         stat_all('Anything')  # should not raise
-
-
-if __name__ == '__main__':
-    unittest.main()
