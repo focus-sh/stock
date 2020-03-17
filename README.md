@@ -10,7 +10,7 @@
 + 调整依赖包源码
    ```bash
     # 设置python库文件目录
-    SITE_PACKAGES=/Users/weshare/python/stock/venv/lib/python3.7/site-packages
+    SITE_PACKAGES=~/python/stock/venv/lib/python3.7/site-packages
     # 支持插入数据时忽略在数据库中已经存在的数据
     sed -i -e 's/executemany(statement/executemany(statement.replace\("INSERT INTO","INSERT IGNORE INTO")/g' \
         $SITE_PACKAGES/sqlalchemy/dialects/mysql/mysqldb.py
