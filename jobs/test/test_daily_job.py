@@ -1,14 +1,10 @@
 import unittest
-from datetime import date
+from datetime import date, timedelta
 
 from jobs.daily_job import stat_all
 
 
 class TestDailyJob(unittest.TestCase):
 
-    def test_can_use_unittest_frame(self):
-        self.assertEqual(1+1, 2)
-
-    @staticmethod
-    def test_can_run_stat_all_job():
-        stat_all(date.fromisoformat('2020-03-13'))  # should not raise
+    def test_can_run_stat_all_job(self):
+        stat_all(date.today() - timedelta(days=1))  # should not raise

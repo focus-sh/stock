@@ -35,9 +35,12 @@ def stat_all_lite(tmp_datetime):
     except Exception as e:
         print("error :", e)
 
-    data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int])
-    data = data.drop_duplicates(subset="code", keep="last")
-    print("######## len data ########:", len(data))
+    try:
+        data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int])
+        data = data.drop_duplicates(subset="code", keep="last")
+        print("######## len data ########:", len(data))
+    except Exception as e:
+        print('error :', e)
 
     try:
         common.insert_db(data, "guess_indicators_lite_daily", False, "`date`,`code`")

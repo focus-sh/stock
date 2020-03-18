@@ -46,7 +46,7 @@ def stat_all_lite(tmp_datetime):
         "wave_crest": data["trade"], "wave_base": data["trade"]}, index=data.index.values)
     print(stock_merge.head(1))
 
-    stock_merge = stock_merge.apply(apply_merge, axis=1)  # , axis=1)
+    stock_merge = stock_merge.apply(apply_merge, axis=1, result_type='broadcast')  # , axis=1)
     del stock_merge["date"]  # 合并前删除 date 字段。
     # 合并数据
     data_new = pd.merge(data, stock_merge, on=['code'], how='left')

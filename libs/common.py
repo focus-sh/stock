@@ -16,7 +16,7 @@ import tushare as ts
 import pandas as pd
 import traceback
 
-# 使用环境变量获得数据库。兼容开发模式可docker模式。
+# 使用环境变量获得数据库。兼容开发模式和docker模式。
 MYSQL_HOST = os.environ.get('MYSQL_HOST') if (os.environ.get('MYSQL_HOST') != None) else "mariadb"
 MYSQL_USER = os.environ.get('MYSQL_USER') if (os.environ.get('MYSQL_USER') != None) else "root"
 MYSQL_PWD = os.environ.get('MYSQL_PWD') if (os.environ.get('MYSQL_PWD') != None) else "mariadb"
@@ -81,12 +81,16 @@ def insert_other_db(to_db, data, table_name, write_index, primary_keys):
 
 # 插入数据。
 def insert(sql, params=()):
-    with conn() as db:
-        print("insert sql:" + sql)
-        try:
-            db.execute(sql, params)
-        except  Exception as e:
-            print("error :", e)
+    connection = conn()
+    cursor = connection.cursor()
+    print("insert sql:" + sql)
+    try:
+        cursor.execute(sql, params)
+    except Exception as e:
+        print("error :", e)
+    finally:
+        cursor.close()
+        connection.close()
 
 
 # 查询数据
@@ -95,7 +99,7 @@ def select(sql, params=()):
         print("select sql:" + sql)
         try:
             db.execute(sql, params)
-        except  Exception as e:
+        except Exception as e:
             print("error :", e)
         result = db.fetchall()
         return result
@@ -103,18 +107,22 @@ def select(sql, params=()):
 
 # 计算数量
 def select_count(sql, params=()):
-    with conn() as db:
-        print("select sql:" + sql)
-        try:
-            db.execute(sql, params)
-        except  Exception as e:
-            print("error :", e)
-        result = db.fetchall()
+    connection = conn()
+    cursor = connection.cursor()
+    print("select sql:" + sql)
+    try:
+        cursor.execute(sql, params)
+        result = cursor.fetchall()
         # 只有一个数组中的第一个数据
         if len(result) == 1:
             return int(result[0][0])
         else:
             return 0
+    except Exception as e:
+        print("error :", e)
+    finally:
+        cursor.close()
+        connection.close()
 
 
 # 通用函数。获得日期参数。
@@ -161,7 +169,7 @@ def run_with_args(run_fun):
 
 
 # 设置基础目录，每次加载使用。
-bash_stock_tmp = "~/data/cache/hist_data_cache/%s/%s/"
+bash_stock_tmp = os.environ['HOME'] + "/data/cache/hist_data_cache/%s/%s/"
 if not os.path.exists(bash_stock_tmp):
     os.makedirs(bash_stock_tmp)  # 创建多个文件夹结构。
     print("######################### init tmp dir #########################")

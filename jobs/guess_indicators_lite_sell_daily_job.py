@@ -92,7 +92,7 @@ def stat_index_calculate(tmp_datetime):
         "date": data["date"], "code": data["code"], "today_trade": data["trade"]}, index=data.index.values)
     print(stock_merge.head(1))
 
-    stock_merge = stock_merge.apply(apply_merge, axis=1)  # , axis=1)
+    stock_merge = stock_merge.apply(apply_merge, axis=1, result_type='broadcast')  # , axis=1)
 
     del stock_merge["date"]  # 合并前删除 date 字段。
     # 合并数据
