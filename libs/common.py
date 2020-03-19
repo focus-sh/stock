@@ -195,3 +195,19 @@ def get_hist_data_cache(code, date_start, date_end):
         stock = stock.sort_index(0)  # 将数据按照日期排序下。
         stock.to_pickle(cache_file, compression="gzip")
         return stock
+
+
+def format_value(val):
+    if val is None:
+        return val
+
+    if type(val) is not str:
+        return val
+
+    if val.find('.') == -1:
+        return val
+
+    try:
+        return str(round(float(val), 4))
+    except ValueError:
+        return val

@@ -8,6 +8,8 @@ import web.base as webBase
 import logging
 import datetime
 
+from libs.common import format_value
+
 WEB_EASTMONEY_URL = u"""
     <a class='btn btn-info btn-xs' href='http://quote.eastmoney.com/%s.html' target='_blank'>查看</a>
     <a class='btn btn-danger btn-xs' href='/data/indicators?code=%s' target='_blank'>指标</a>
@@ -135,11 +137,14 @@ class GetStockDataHandler(webBase.BaseHandler):
         logging.info("count sql : " + count_sql)
         stock_web_list = self.db.query(sql)
 
-        for tmp_obj in (stock_web_list):
+        for tmp_obj in stock_web_list:
             logging.info("####################")
+
+            for key in tmp_obj:
+                tmp_obj[key] = format_value(tmp_obj[key])
+
             if type_param == "editor":
                 tmp_obj["DT_RowId"] = tmp_obj[stock_web.columns[0]]
-            # logging.info(tmp_obj)
             try:
                 # 增加columns 字段中的【东方财富】
                 logging.info("eastmoney_name : %s " % eastmoney_name)
@@ -149,8 +154,6 @@ class GetStockDataHandler(webBase.BaseHandler):
                     tmp_obj["eastmoney_url"] = tmp_url
                     logging.info(tmp_idx)
                     logging.info(tmp_obj["eastmoney_url"])
-                    # logging.info(type(tmp_obj))
-                    # tmp.column_names.insert(tmp_idx, eastmoney_name)
             except Exception as e:
                 print("error :", e)
 

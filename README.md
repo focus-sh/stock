@@ -1,5 +1,5 @@
 ## 项目说明
-### 开发环境搭建
+### 开发环境
 #### 依赖包安装
 + 安装依赖(Mac OS)：
     ```bash
@@ -30,9 +30,13 @@
     CREATE DATABASE IF NOT EXISTS stock_data CHARACTER SET utf8 COLLATE utf8_general_ci
     ```
 
+#### 测试
++ 使用命令`python -m unittest discover .`运行所有测试案例
+
 #### 本地启动应用
 + web应用的入口在：web/main.py文件，运行该文件
 + 本地访问地址：http://localhost:9999
+
 
 ### 使用方法（依赖docker）
 

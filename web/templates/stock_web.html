@@ -29,12 +29,12 @@
 	<!-- div.dataTables_borderWrap -->
 	<div>
 		<div class="pull-right tableTools-container"></div>
-		<table id="dynamic-table" class="table table-striped table-bordered table-hover">
+		<table id="dynamic-table" class="table text-nowrap table-bordered table-hover">
 			<thead>
-				<tr>{% for column_name in stockWeb.column_names %}
-					<th>{{ column_name }}</th>
+			<tr>{% for column_name in stockWeb.column_names %}
+				<th>{{ column_name }}</th>
 				{% end %}
-				</tr>
+			</tr>
 			</thead>
 		</table>
 	</div>
@@ -49,6 +49,7 @@
 		var myTable = $('#dynamic-table').DataTable( {
 			"select": true,
 			"bFilter": true,
+			"scrollX": true,
 			"ordering": true,
 			"processing": true,
 			"serverSide": true,
