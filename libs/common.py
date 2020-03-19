@@ -185,10 +185,10 @@ def get_hist_data_cache(code, date_start, date_end):
     cache_file = cache_dir + "%s^%s.gzip.pickle" % (date_end, code)
     # 如果缓存存在就直接返回缓存数据。压缩方式。
     if os.path.isfile(cache_file):
-        print("######### read from cache #########", cache_file)
+        print("===============read from cache[%s]=================" % cache_file)
         return pd.read_pickle(cache_file, compression="gzip")
     else:
-        print("######### get data, write cache #########", code, date_start, date_end)
+        print("===============get data, write cache [%s, %s, %s]========" % (code, date_start, date_end))
         stock = ts.get_hist_data(code, start=date_start, end=date_end)
         if stock is None:
             return None
@@ -198,13 +198,7 @@ def get_hist_data_cache(code, date_start, date_end):
 
 
 def format_value(val):
-    if val is None:
-        return val
-
-    if type(val) is not str:
-        return val
-
-    if val.find('.') == -1:
+    if val is None or type(val) is not str or val.find('.') == -1:
         return val
 
     try:

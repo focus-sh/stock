@@ -20,12 +20,12 @@ http://tushare.org/trading.html#id2
 
 """
 
+
 def stat_index_all(tmp_datetime):
     datetime_str = (tmp_datetime).strftime("%Y-%m-%d")
     datetime_int = (tmp_datetime).strftime("%Y%m%d")
     print("datetime_str:", datetime_str)
     print("datetime_int:", datetime_int)
-
 
     data = ts.get_index()
     # 处理重复数据，保存最新一条数据。最后一步处理，否则concat有问题。
@@ -40,6 +40,7 @@ def stat_index_all(tmp_datetime):
         print("no data .")
 
     print(datetime_str)
+
 
 def stat_today_all(tmp_datetime):
     datetime_str = (tmp_datetime).strftime("%Y-%m-%d")
