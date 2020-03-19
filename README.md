@@ -52,6 +52,8 @@ sudo docker run --name mariadb -v ~/data/mariadb/data:/var/lib/mysql \
 
 sudo docker run -itd --link=mariadb --name stock  \
     -v ~/data/notebooks:/data/notebooks \
+    -v ~/data/logs:/data/logs \
+    -v ~/data/cache:/root/data/cache \
     -p 8888:8888 \
     -p 9999:9999 \
     wangzhibin2013/stock:latest
