@@ -5,7 +5,7 @@
     ```bash
       brew install mysql
       brew install ta-lib
-      pip install -r requirements.txt -i http://pypi.douban.com/simple --trusted-host pypi.douban.com
+      pip install -r requirements.txt -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
     ```
 + 调整依赖包源码
    ```bash
