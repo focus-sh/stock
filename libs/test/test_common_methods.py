@@ -1,9 +1,8 @@
-import os
 import shutil
 import unittest
 from unittest.mock import patch
 
-from libs.common import format_value, get_hist_data_cache, bash_stock_tmp
+from libs.common import format_value, get_hist_data_cache
 
 
 class TestCommonMethods(unittest.TestCase):

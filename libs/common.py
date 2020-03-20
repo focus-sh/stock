@@ -44,7 +44,7 @@ def engine_to_db(to_db):
 
 def conn():
     db = MySQLdb.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PWD, MYSQL_DB, charset="utf8")
-    # db.autocommit(on=True)
+    db.autocommit(on=True)
     return db
 
 
@@ -75,7 +75,7 @@ def insert_other_db(to_db, data, table_name, write_index, primary_keys):
             # 执行数据库插入数据。
             try:
                 con.execute('ALTER TABLE `%s` ADD PRIMARY KEY (%s);' % (table_name, primary_keys))
-            except  Exception as e:
+            except Exception as e:
                 print("################## ADD PRIMARY KEY ERROR :", e)
 
 
@@ -109,7 +109,7 @@ def select(sql, params=()):
 def select_count(sql, params=()):
     connection = conn()
     cursor = connection.cursor()
-    print("select sql:" + sql)
+    print(f"++LOG++ SQL: {sql} WITH PARAMS: {params}")
     try:
         cursor.execute(sql, params)
         result = cursor.fetchall()
@@ -205,3 +205,32 @@ def format_value(val):
         return str(round(float(val), 4))
     except ValueError:
         return val
+
+
+class DataHandler(object):
+
+    @staticmethod
+    def count_by_daystr(table_name, daystr):
+        return DataHandler.count_with_where_clause(table_name, "`date`= %s ", [daystr])
+
+    @staticmethod
+    def count_with_where_clause(table_name, clause, params=()):
+        sql_count = " SELECT count(1) FROM `stock_data`.`" + table_name + "` WHERE " + clause
+        count = select_count(sql_count, params)
+        return count
+
+    @staticmethod
+    def del_by_daystr(table_name, daystr):
+        try:
+            # 删除老数据。
+            del_sql = " DELETE FROM `stock_data`.`" + table_name + "` WHERE `date`= %s " % (day.strftime("%Y%m%d"))
+            insert(del_sql)
+        except Exception as e:
+            print("error :", e)
+
+    @staticmethod
+    def create_data_frame_by_sql(sql, params, subset, keep):
+        print(f"++LOG++ Pandas READ: {sql} WITH PARAMS: {params}")
+        data = pd.read_sql(sql=sql, con=engine(), params=params)
+        print(f"++LOG++ Pandas DROP DUPLICATES: subset={subset}, keep={keep}")
+        return data.drop_duplicates(subset, keep)

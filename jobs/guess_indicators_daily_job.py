@@ -9,8 +9,10 @@ import math
 import datetime
 import stockstats
 
+from libs.common import DataHandler
 
-### 对每日指标数据，进行筛选。将符合条件的。二次筛选出来。
+batch_size = 100
+
 def stat_all_lite(tmp_datetime):
     datetime_str = (tmp_datetime).strftime("%Y-%m-%d")
     datetime_int = (tmp_datetime).strftime("%Y%m%d")
@@ -49,45 +51,28 @@ def stat_all_lite(tmp_datetime):
 
 
 # 批处理数据。
-def stat_all_batch(tmp_datetime):
-    datetime_str = (tmp_datetime).strftime("%Y-%m-%d")
-    datetime_int = (tmp_datetime).strftime("%Y%m%d")
-    print("datetime_str:", datetime_str)
-    print("datetime_int:", datetime_int)
+def stat_all_batch(day):
+    day_int = day.strftime("%Y%m%d")
+    DataHandler.del_by_daystr('guess_indicators_daily', day_int)
 
-    try:
-        # 删除老数据。
-        del_sql = " DELETE FROM `stock_data`.`guess_indicators_daily` WHERE `date`= %s " % datetime_int
-        common.insert(del_sql)
-    except Exception as e:
-        print("error :", e)
-
-    sql_count = """
-    SELECT count(1) FROM stock_data.ts_today_all WHERE `date` = %s and `trade` > 0 and `open` > 0 and trade <= 20 
-                 and `code` not like %s and `name` not like %s
-    """
-    # 修改逻辑，增加中小板块计算。 中小板：002，创业板：300 。and `code` not like %s and `code` not like %s and `name` not like %s
-    # count = common.select_count(sql_count, params=[datetime_int, '002%', '300%', '%st%'])
-    count = common.select_count(sql_count, params=[datetime_int, '300%', '%st%'])
-    print("count :", count)
-    batch_size = 100
+    count = DataHandler.count_with_where_clause(
+        'ts_today_all',
+        params=[day_int, '300%', '%st%'],
+        clause="`date` = %s and `trade` > 0 and `open` > 0 "
+               "and trade <= 20 and `code` not like %s "
+               "and `name` not like %s"
+    )
     end = int(math.ceil(float(count) / batch_size) * batch_size)
-    print(end)
+
     for i in range(0, end, batch_size):
         print("loop :", i)
-        # 查询今日满足股票数据。剔除数据：创业板股票数据，中小板股票数据，所有st股票
-        # #`code` not like '002%' and `code` not like '300%'  and `name` not like '%st%'
-        sql_1 = """ 
-                    SELECT `date`, `code`, `name`, `changepercent`, `trade`, `open`, `high`, `low`, 
-                        `settlement`, `volume`, `turnoverratio`, `amount`, `per`, `pb`, `mktcap`, `nmc` 
-                    FROM stock_data.ts_today_all WHERE `date` = %s and `trade` > 0 and `open` > 0 and trade <= 20 
-                        and `code` not like %s and `name` not like %s limit %s , %s
-                    """
-        print(sql_1)
-        # data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int, '002%', '300%', '%st%', i, batch_size])
-        data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int, '300%', '%st%', i, batch_size])
-        data = data.drop_duplicates(subset="code", keep="last")
-        print("########data[trade]########:", len(data))
+        data = DataHandler.create_data_frame_by_sql(sql="""
+                SELECT `date`, `code`, `name`, `changepercent`, `trade`, `open`, `high`, `low`, 
+                  `settlement`, `volume`, `turnoverratio`, `amount`, `per`, `pb`, `mktcap`, `nmc` 
+                FROM stock_data.ts_today_all WHERE `date` = %s and `trade` > 0 and `open` > 0 and trade <= 20 
+                  and `code` not like %s and `name` not like %s limit %s , %s
+                """, params=[day_int, '300%', '%st%', i, batch_size], subset='code', keep='last')
+
         stat_index_all(data, i)
 
 
@@ -98,7 +83,6 @@ def stat_index_all(data, idx):
     # open price change (in percent) between today and the day before yesterday ‘r’ stands for rate.
     # stock[‘close_-2_r’]
     # 可以看到，-n天数据和今天数据的百分比。
-
 
     # 2), CR指标
     # http://wiki.mbalib.com/wiki/CR%E6%8C%87%E6%A0%87 价格动量指标
@@ -119,7 +103,6 @@ def stat_index_all(data, idx):
     # MACD 则可发挥其应有的功能，但当市场呈牛皮盘整格局，股价不上不下时，MACD买卖讯号较不明显。
     # 当用MACD作分析时，亦可运用其他的技术分析指标如短期 K，D图形作为辅助工具，而且也可对买卖讯号作双重的确认。
 
-
     # 5), BOLL指标
     # http://wiki.mbalib.com/wiki/BOLL
     # 布林线指标(Bollinger Bands)
@@ -130,7 +113,6 @@ def stat_index_all(data, idx):
     # （2）强弱指标保持高于50表示为强势市场，反之低于50表示为弱势市场。
     # （3）强弱指标多在70与30之间波动。当六日指标上升到达80时，表示股市已有超买现象，
     # 如果一旦继续上升，超过90以上时，则表示已到严重超买的警戒区，股价已形成头部，极可能在短期内反转回转。
-
 
     # 7), W%R指标
     # http://wiki.mbalib.com/wiki/%E5%A8%81%E5%BB%89%E6%8C%87%E6%A0%87
