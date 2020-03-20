@@ -11,8 +11,6 @@ import web.base as webBase
 import logging
 import datetime
 
-from libs.common import format_value
-
 WEB_EASTMONEY_URL = u"""
     <a class='btn btn-info btn-xs' href='http://quote.eastmoney.com/%s.html' target='_blank'>查看</a>
     <a class='btn btn-danger btn-xs' href='/data/indicators?code=%s' target='_blank'>指标</a>
@@ -142,9 +140,6 @@ class GetStockDataHandler(webBase.BaseHandler):
 
         for tmp_obj in stock_web_list:
             logging.info("####################")
-
-            for key in tmp_obj:
-                tmp_obj[key] = format_value(tmp_obj[key])
 
             if type_param == "editor":
                 tmp_obj["DT_RowId"] = tmp_obj[stock_web.columns[0]]

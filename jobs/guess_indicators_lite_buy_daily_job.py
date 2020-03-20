@@ -2,24 +2,20 @@
 # -*- coding: utf-8 -*-
 
 
-import libs.common as common
-import pandas as pd
-import numpy as np
-import math
 import datetime
 import heapq
 
-
-### 对每日指标数据，进行筛选。将符合条件的。二次筛选出来。
-import libs.pandas
+import pandas as pd
 import libs.mysql
+import libs.pandas
+from libs.executor import executor
 
 
-def stat_all_lite(tmp_datetime):
+def stat_all_lite(date):
     # 要操作的数据库表名称。
     table_name = "guess_indicators_lite_buy_daily"
-    datetime_str = (tmp_datetime).strftime("%Y-%m-%d")
-    datetime_int = (tmp_datetime).strftime("%Y%m%d")
+    datetime_str = (date).strftime("%Y-%m-%d")
+    datetime_int = (date).strftime("%Y%m%d")
     print("datetime_str:", datetime_str)
     print("datetime_int:", datetime_int)
 
@@ -124,7 +120,5 @@ def apply_merge(tmp):
         return list([code, date, 0, 0, 0])
 
 
-# main函数入口
 if __name__ == '__main__':
-    # 二次筛选数据。
-    tmp_datetime = common.run_with_args(stat_all_lite)
+    executor.run_with_args(stat_all_lite)

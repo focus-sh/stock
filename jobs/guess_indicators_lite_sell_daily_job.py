@@ -2,18 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-import libs.common as common
-import pandas as pd
-import numpy as np
-import math
 import datetime
-import heapq
+
+import pandas as pd
 import stockstats
 
-
-# code      date today_trade
-import libs.pandas
-import libs.mysql
+from libs.executor import executor
 
 
 def apply_merge(tmp):
@@ -135,7 +129,5 @@ def stat_index_calculate(tmp_datetime):
     print(data_new)
 
 
-# main函数入口
 if __name__ == '__main__':
-    # 计算买卖。
-    tmp_datetime = common.run_with_args(stat_index_calculate)
+    tmp_datetime = executor.run_with_args(stat_index_calculate)

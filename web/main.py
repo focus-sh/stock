@@ -9,11 +9,11 @@ import tornado.ioloop
 import tornado.options
 import torndb
 from tornado import gen
-from libs.common import mysql
 import web.base as webBase
 import web.dataEditorHandler as dataEditorHandler
 import web.dataIndicatorsHandler as dataIndicatorsHandler
 import web.dataTableHandler as dataTableHandler
+from libs.mysql import mysql
 
 
 class Application(tornado.web.Application):

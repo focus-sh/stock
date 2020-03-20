@@ -1,26 +1,22 @@
 import datetime
-import logging
 import unittest
 from unittest.mock import patch
 
-from jobs.guess_indicators_daily_job import stat_all_batch, stat_index_all, concat_guess_data, apply_guess
 import pandas as pd
 
-from libs.common import mysql
+from jobs.guess_indicators_daily_job import stat_all_batch, stat_index_all, concat_guess_data, apply_guess
+from libs.mysql import mysql
 
 
 class TestGuessIndicatorsDailyJob(unittest.TestCase):
 
-    def setUp(self):
-        logging.basicConfig(level=logging.DEBUG)
-
-    @patch('libs.mysql.insert_db')
-    @patch('libs.common.bash_stock_tmp', './data/guess/%s/%s/')
-    @patch('libs.common.pandas.create_data_frame_by_sql')
+    @patch('libs.mysql.mysql.insert_db')
+    @patch('libs.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
+    @patch('libs.pandas.pandas.create_data_frame_by_sql')
     @patch('jobs.guess_indicators_daily_job.batch_size', 1)
-    @patch('libs.common.mysql.count_by_date')
-    @patch('libs.common.mysql.del_by_date')
-    @patch('libs.common.mysql.count_with_where_clause')
+    @patch('libs.mysql.mysql.count_by_date')
+    @patch('libs.mysql.mysql.del_by_date')
+    @patch('libs.mysql.mysql.count_with_where_clause')
     def test_stat_all_batch(self,
                             count_with_where_clause,
                             del_by_date,
@@ -47,8 +43,8 @@ class TestGuessIndicatorsDailyJob(unittest.TestCase):
                  'trix_9_sma': -0.26, 'vr': 61.83, 'vr_6_sma': 60.32, 'wr_10': 79.46, 'wr_6': 77.15}
         self.assertDictEqual(kwargs['data'].loc[0].to_dict(), index)
 
-    @patch('libs.mysql.insert_db')
-    @patch('libs.common.bash_stock_tmp', './data/guess/%s/%s/')
+    @patch('libs.mysql.mysql.insert_db')
+    @patch('libs.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
     def test_stat_index_all(self, insert_db):
         data = pd.DataFrame({
             'trade': ['13.42'],
@@ -67,7 +63,7 @@ class TestGuessIndicatorsDailyJob(unittest.TestCase):
                  'trix_9_sma': -0.26, 'vr': 61.83, 'vr_6_sma': 60.32, 'wr_10': 79.46, 'wr_6': 77.15}
         self.assertDictEqual(kwargs['data'].loc[0].to_dict(), index)
 
-    @patch('libs.common.bash_stock_tmp', './data/guess/%s/%s/')
+    @patch('libs.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
     def test_concat_guess_data(self):
         data = pd.DataFrame({
             'trade': ['13.42'],
@@ -84,7 +80,7 @@ class TestGuessIndicatorsDailyJob(unittest.TestCase):
                  'trix_9_sma': -0.26, 'vr': 61.83, 'vr_6_sma': 60.32, 'wr_10': 79.46, 'wr_6': 77.15}
         self.assertDictEqual(result.loc[0].to_dict(), index)
 
-    @patch('libs.common.bash_stock_tmp', './data/guess/%s/%s/')
+    @patch('libs.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
     def test_apply_guess(self):
         tmp = pd.Series({
             'date': '20200320',

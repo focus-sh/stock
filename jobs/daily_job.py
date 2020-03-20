@@ -1,52 +1,31 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-
-
-import libs.common as common
-import sys
+import logging
 import os
-import time
-import pandas as pd
-import tushare as ts
-from sqlalchemy.types import NVARCHAR
-from sqlalchemy import inspect
-import datetime
 import shutil
 
+import tushare as ts
 
-####### 使用 5.pdf，先做 基本面数据 的数据，然后在做交易数据。
-#
-import libs.mysql
+from libs.executor import executor
+from libs.mysql import mysql
 
 
-def stat_all(tmp_datetime):
-    datetime_str = (tmp_datetime).strftime("%Y-%m-%d")
-    datetime_int = (tmp_datetime).strftime("%Y%m%d")
-
-    cache_dir = common.bash_stock_tmp % (datetime_str[0:7], datetime_str)
+def stat_all(date):
+    cache_dir = common.bash_stock_tmp % (date.strftime("%Y-%m-%d")[0:7], (date.strftime("%Y-%m-%d")))
     if os.path.exists(cache_dir):
         shutil.rmtree(cache_dir)
-        print("remove cache dir force :", cache_dir)
+        logging.info(f"remove cache dir force :{cache_dir}")
 
-    print("datetime_str:", datetime_str)
-    print("datetime_int:", datetime_int)
-    data = ts.top_list(datetime_str)
-    # 处理重复数据，保存最新一条数据。最后一步处理，否则concat有问题。
-    #
-    if not data is None and len(data) > 0:
-        # 插入数据库。
-        # del data["reason"]
-        data["date"] = datetime_int  # 修改时间成为int类型。
+    data = ts.top_list(date.strftime("%Y-%m-%d"))
+
+    if data is not None and len(data) > 0:
+        data["date"] = date.strftime("%Y%m%d")
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        libs.mysql.insert_db(data, "ts_top_list", False, "`date`,`code`")
+        mysql.insert_db(data, "ts_top_list", False, "`date`,`code`")
     else:
-        print("no data .")
-
-    print(datetime_str)
+        logging.warning(f'No data found by calling ts.top_list({date.strftime("%Y-%m-%d")}) function.')
 
 
-# main函数入口
 if __name__ == '__main__':
-    # 使用方法传递。
-    tmp_datetime = common.run_with_args(stat_all)
+    executor.run_with_args(stat_all)
