@@ -11,6 +11,10 @@ import heapq
 
 
 ### 对每日指标数据，进行筛选。将符合条件的。二次筛选出来。
+import libs.pandas
+import libs.mysql
+
+
 def stat_all_lite(tmp_datetime):
     # 要操作的数据库表名称。
     table_name = "guess_indicators_lite_buy_daily"
@@ -34,7 +38,7 @@ def stat_all_lite(tmp_datetime):
                             and `changepercent` > 2 and `pb` > 0 
         """
     # and `changepercent` > 2 and `pb` > 0 and `turnoverratio` > 5 去除掉换手率参数。
-    data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int])
+    data = pd.read_sql(sql=sql_1, con=libs.mysql.engine(), params=[datetime_int])
     data = data.drop_duplicates(subset="code", keep="last")
     print("######## len data ########:", len(data))
     # del data["name"]
@@ -72,7 +76,7 @@ def stat_all_lite(tmp_datetime):
     del data_new["trade_float32"]
 
     try:
-        common.insert_db(data_new, table_name, False, "`code`")
+        libs.mysql.insert_db(data_new, table_name, False, "`code`")
         print("insert_db")
     except Exception as e:
         print("error :", e)

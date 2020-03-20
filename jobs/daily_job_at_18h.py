@@ -11,6 +11,8 @@ from sqlalchemy.types import NVARCHAR
 from sqlalchemy import inspect
 import datetime
 
+import libs.mysql
+
 """
 交易数据
 
@@ -35,7 +37,7 @@ def stat_index_all(tmp_datetime):
         data["date"] = datetime_int  # 修改时间成为int类型。
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        common.insert_db(data, "ts_index_all", False, "`date`,`code`")
+        libs.mysql.insert_db(data, "ts_index_all", False, "`date`,`code`")
     else:
         print("no data .")
 
@@ -55,7 +57,7 @@ def stat_today_all(tmp_datetime):
         data["date"] = datetime_int  # 修改时间成为int类型。
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        common.insert_db(data, "ts_today_all", False, "`date`,`code`")
+        libs.mysql.insert_db(data, "ts_today_all", False, "`date`,`code`")
     else:
         print("no data .")
 
@@ -69,7 +71,7 @@ def stat_today_all(tmp_datetime):
         data["date"] = datetime_int  # 修改时间成为int类型。
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        common.insert_db(data, "ts_index_all", False, "`date`,`code`")
+        libs.mysql.insert_db(data, "ts_index_all", False, "`date`,`code`")
     else:
         print("no data .")
 

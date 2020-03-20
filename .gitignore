@@ -110,5 +110,3 @@ doc
 /bin
 pkg
 *.tmp
-
-**/data/**

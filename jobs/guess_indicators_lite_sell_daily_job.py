@@ -12,6 +12,10 @@ import stockstats
 
 
 # code      date today_trade
+import libs.pandas
+import libs.mysql
+
+
 def apply_merge(tmp):
     date = tmp["date"]
     code = tmp["code"]
@@ -81,7 +85,7 @@ def stat_index_calculate(tmp_datetime):
                 `cci`, `wave_base`, `wave_crest`, `wave_mean`, `up_rate`
                 FROM guess_indicators_lite_buy_daily where `buy_date` <= """ + datetime_int
     print(sql_1)
-    data = pd.read_sql(sql=sql_1, con=common.engine(), params=[])
+    data = pd.read_sql(sql=sql_1, con=libs.mysql.engine(), params=[])
     data = data.drop_duplicates(subset="code", keep="last")
     print(data["trade"])
     data["trade_float32"] = data["trade"].astype('float32', copy=False)
@@ -116,13 +120,13 @@ def stat_index_calculate(tmp_datetime):
     # 删除老数据。
     try:
         del_sql = " DELETE FROM `stock_data`.`" + table_name + "` WHERE `date`= '%s' " % datetime_int
-        common.insert(del_sql)
+        libs.mysql.insert(del_sql)
         print("insert_db")
     except Exception as e:
         print("error :", e)
     del data_new["trade_float32"]
     try:
-        common.insert_db(data_new, table_name, False, "`date`,`code`")
+        libs.mysql.insert_db(data_new, table_name, False, "`date`,`code`")
         print("insert_db")
     except Exception as e:
         print("error :", e)

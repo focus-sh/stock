@@ -2,18 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import os.path
-import torndb
+
 import tornado.escape
-from tornado import gen
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
-import libs.common as common
-import libs.stock_web_dic as stock_web_dic
-import web.dataTableHandler as dataTableHandler
+import torndb
+from tornado import gen
+from libs.common import mysql
+import web.base as webBase
 import web.dataEditorHandler as dataEditorHandler
 import web.dataIndicatorsHandler as dataIndicatorsHandler
-import web.base as webBase
+import web.dataTableHandler as dataTableHandler
+
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -41,8 +42,8 @@ class Application(tornado.web.Application):
         # Have one global connection to the blog DB across all handlers
         self.db = torndb.Connection(
             charset="utf8", max_idle_time=3600, connect_timeout=1000,
-            host=common.MYSQL_HOST, database=common.MYSQL_DB,
-            user=common.MYSQL_USER, password=common.MYSQL_PWD)
+            host=mysql.host, database=mysql.schema,
+            user=mysql.user, password=mysql.password)
 
 
 # 首页handler。

@@ -1,5 +1,8 @@
 #!/usr/local/bin/python
 # -*- coding: utf-8 -*-
+import libs.pandas
+import libs.mysql
+
 
 class StockWebData:
     def __init__(self, mode, type, name, table_name, columns, column_names, primary_key, order_by):
@@ -348,7 +351,7 @@ for tmp in STOCK_WEB_DATA_LIST:
     try:
         # 增加columns 字段中的【东方财富】
         tmp_idx = tmp.columns.index("code")
-        tmp.column_names.insert(tmp_idx + 1, "东方财富")
+        libs.mysql.insert(tmp_idx + 1, "东方财富")
     except  Exception as e:
         print("error :", e)
 

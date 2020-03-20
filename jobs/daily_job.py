@@ -16,6 +16,9 @@ import shutil
 
 ####### 使用 5.pdf，先做 基本面数据 的数据，然后在做交易数据。
 #
+import libs.mysql
+
+
 def stat_all(tmp_datetime):
     datetime_str = (tmp_datetime).strftime("%Y-%m-%d")
     datetime_int = (tmp_datetime).strftime("%Y%m%d")
@@ -36,7 +39,7 @@ def stat_all(tmp_datetime):
         data["date"] = datetime_int  # 修改时间成为int类型。
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        common.insert_db(data, "ts_top_list", False, "`date`,`code`")
+        libs.mysql.insert_db(data, "ts_top_list", False, "`date`,`code`")
     else:
         print("no data .")
 

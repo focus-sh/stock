@@ -13,6 +13,9 @@ import datetime
 
 
 # 增加一个新quarter列，用来存储季度信息。
+import libs.mysql
+
+
 def concat_quarter(year, quarter, data_array):
     print(len(data_array))
     quarter_str = str(year) + str("%02d" % quarter)  # 格式化季度数据。2位。
@@ -35,7 +38,7 @@ def stat_all(tmp_datetime):
     # 处理重复数据，保存最新一条数据。最后一步处理，否则concat有问题。
     data = data.drop_duplicates(subset="code", keep="last")
     # 插入数据库。
-    common.insert_db(data, "ts_report_data", False, "`quarter`,`code`")
+    libs.mysql.insert_db(data, "ts_report_data", False, "`quarter`,`code`")
 
     # 盈利能力
     data = ts.get_profit_data(year, quarter)
@@ -44,7 +47,7 @@ def stat_all(tmp_datetime):
     # 处理重复数据，保存最新一条数据。
     data = data.drop_duplicates(subset="code", keep="last")
     # 插入数据库。
-    common.insert_db(data, "ts_profit_data", False, "`quarter`,`code`")
+    libs.mysql.insert_db(data, "ts_profit_data", False, "`quarter`,`code`")
 
     # 营运能力
     data = ts.get_operation_data(year, quarter)
@@ -53,7 +56,7 @@ def stat_all(tmp_datetime):
     # 处理重复数据，保存最新一条数据。最后一步处理，否则concat有问题。
     data = data.drop_duplicates(subset="code", keep="last")
     # 插入数据库。
-    common.insert_db(data, "ts_operation_data", False, "`quarter`,`code`")
+    libs.mysql.insert_db(data, "ts_operation_data", False, "`quarter`,`code`")
 
     # 成长能力
     data = ts.get_growth_data(year, quarter)
@@ -62,7 +65,7 @@ def stat_all(tmp_datetime):
     # 处理重复数据，保存最新一条数据。最后一步处理，否则concat有问题。
     data = data.drop_duplicates(subset="code", keep="last")
     # 插入数据库。
-    common.insert_db(data, "ts_growth_data", False, "`quarter`,`code`")
+    libs.mysql.insert_db(data, "ts_growth_data", False, "`quarter`,`code`")
 
     # 偿债能力
     data = ts.get_debtpaying_data(year, quarter)
@@ -71,7 +74,7 @@ def stat_all(tmp_datetime):
     # 处理重复数据，保存最新一条数据。最后一步处理，否则concat有问题。
     data = data.drop_duplicates(subset="code", keep="last")
     # 插入数据库。
-    common.insert_db(data, "ts_debtpaying_data", False, "`quarter`,`code`")
+    libs.mysql.insert_db(data, "ts_debtpaying_data", False, "`quarter`,`code`")
 
     # 现金流量
     data = ts.get_cashflow_data(year, quarter)
@@ -80,7 +83,7 @@ def stat_all(tmp_datetime):
     # 处理重复数据，保存最新一条数据。最后一步处理，否则concat有问题。
     data = data.drop_duplicates(subset="code", keep="last")
     # 插入数据库。
-    common.insert_db(data, "ts_cashflow_data", False, "`quarter`,`code`")
+    libs.mysql.insert_db(data, "ts_cashflow_data", False, "`quarter`,`code`")
 
 
 # main函数入口

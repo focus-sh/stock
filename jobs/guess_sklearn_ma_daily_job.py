@@ -15,6 +15,9 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
 
 # 要操作的数据库表名称。
+import libs.pandas
+import libs.mysql
+
 table_name = "guess_sklearn_ma_daily"
 
 
@@ -29,7 +32,7 @@ def stat_all_batch(tmp_datetime):
         # 删除老数据。
         del_sql = " DELETE FROM `stock_data`.`%s` WHERE `date`= %s " % (table_name, datetime_int)
         print("del_sql:", del_sql)
-        common.insert(del_sql)
+        libs.mysql.insert(del_sql)
     except Exception as e:
         print("error :", e)
 
@@ -39,7 +42,7 @@ def stat_all_batch(tmp_datetime):
     """
     # 修改逻辑，增加中小板块计算。 中小板：002，创业板：300 。and `code` not like %s and `code` not like %s and `name` not like %s
     # count = common.select_count(sql_count, params=[datetime_int, '002%', '300%', '%st%'])
-    count = common.select_count(sql_count, params=[datetime_int, '300%', '%st%'])
+    count = libs.mysql.select_count(sql_count, params=[datetime_int, '300%', '%st%'])
     print("count :", count)
     batch_size = 100
     end = int(math.ceil(float(count) / batch_size) * batch_size)
@@ -57,7 +60,7 @@ def stat_all_batch(tmp_datetime):
                     """
         print(sql_1)
         # data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int, '002%', '300%', '%st%', i, batch_size])
-        data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int, '300%', '%st%', i, batch_size])
+        data = pd.read_sql(sql=sql_1, con=libs.mysql.engine(), params=[datetime_int, '300%', '%st%', i, batch_size])
         data = data.drop_duplicates(subset="code", keep="last")
         print("########data[trade]########:", len(data))
 
@@ -83,7 +86,7 @@ def stat_all_batch(tmp_datetime):
         del data_new["trade_float32"]
 
         try:
-            common.insert_db(data_new, table_name, False, "`date`,`code`")
+            libs.mysql.insert_db(data_new, table_name, False, "`date`,`code`")
             print("insert_db")
         except Exception as e:
             print("error :", e)

@@ -12,6 +12,9 @@ from sqlalchemy import inspect
 import datetime
 import heapq
 
+import libs.pandas
+import libs.mysql
+
 """
 SELECT `date`, `code`, `name`, `changepercent`, `trade`, `open`, `high`, `low`, 
                 `settlement`, `volume`, `turnoverratio`, `amount`, `per`, `pb`, `mktcap`, `nmc` 
@@ -36,7 +39,7 @@ def stat_index_all(tmp_datetime):
                 and `code` not like %s and `code` not like %s and `name` not like %s
             """
     print(sql_1)
-    data = pd.read_sql(sql=sql_1, con=common.engine(), params=[datetime_int, '002%', '300%', '%st%'])
+    data = pd.read_sql(sql=sql_1, con=libs.mysql.engine(), params=[datetime_int, '002%', '300%', '%st%'])
     print(type(data))
     data = data.drop_duplicates(subset="code", keep="last")
     print(data["trade"])
@@ -67,10 +70,10 @@ def stat_index_all(tmp_datetime):
 
     # 删除老数据。
     del_sql = " DELETE FROM `stock_data`.`guess_period_daily` WHERE `date`= '%s' " % datetime_int
-    common.insert(del_sql)
+    libs.mysql.insert(del_sql)
     # print(data_new.head())
     # data_new["down_rate"] = (data_new["trade"] - data_new["wave_mean"]) / data_new["wave_base"]
-    common.insert_db(data_new, "guess_period_daily", False, "`date`,`code`")
+    libs.mysql.insert_db(data_new, "guess_period_daily", False, "`date`,`code`")
 
     # 进行左连接.
     # tmp = pd.merge(tmp, tmp2, on=['company_id'], how='left')
