@@ -120,7 +120,7 @@ def stat_index_calculate(tmp_datetime):
         print("error :", e)
     del data_new["trade_float32"]
     try:
-        libs.mysql.insert_db(data_new, table_name, False, "`date`,`code`")
+        libs.mysql.insert_db(data_new, table_name, "`date`,`code`", False)
         print("insert_db")
     except Exception as e:
         print("error :", e)

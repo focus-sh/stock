@@ -8,10 +8,11 @@ import tushare as ts
 
 from libs.executor import executor
 from libs.mysql import mysql
+from libs.pandas import pandas
 
 
 def stat_all(date):
-    cache_dir = common.bash_stock_tmp % (date.strftime("%Y-%m-%d")[0:7], (date.strftime("%Y-%m-%d")))
+    cache_dir = pandas.bash_stock_tmp % (date.strftime("%Y-%m-%d")[0:7], (date.strftime("%Y-%m-%d")))
     if os.path.exists(cache_dir):
         shutil.rmtree(cache_dir)
         logging.info(f"remove cache dir force :{cache_dir}")
@@ -22,7 +23,7 @@ def stat_all(date):
         data["date"] = date.strftime("%Y%m%d")
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        mysql.insert_db(data, "ts_top_list", False, "`date`,`code`")
+        mysql.insert_db(data, "ts_top_list", "`date`,`code`", False)
     else:
         logging.warning(f'No data found by calling ts.top_list({date.strftime("%Y-%m-%d")}) function.')
 

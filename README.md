@@ -17,6 +17,9 @@
     # torndb支持python3
     sed -i -e 's/itertools\.izip/zip/g' $SITE_PACKAGES/torndb.py
     sed -i -e 's/\+ CONVERSIONS\[field_type\]/\+ \[CONVERSIONS\[field_type\],bytes\]/g' $SITE_PACKAGES/torndb.py
+    # 修改pandas创建数据库的方法，String类型使用VARCHAR(length=255)，不再使用Text（原因：Text不支持创建索引）
+    sed -i -e 's/from sqlalchemy.types import (/from sqlalchemy.types import (VARCHAR,/g' $SITE_PACKAGES/pandas/io/sql.py
+    sed -i -e 's/return Text/return VARCHAR(length=255)/g' $SITE_PACKAGES/pandas/io/sql.py
    ```  
 
 #### 数据库环境准备

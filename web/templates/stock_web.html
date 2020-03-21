@@ -31,19 +31,18 @@
 		<div class="pull-right tableTools-container"></div>
 		<table id="dynamic-table" class="table text-nowrap table-bordered table-hover">
 			<thead>
-			<tr>{% for column_name in stockWeb.column_names %}
-				<th>{{ column_name }}</th>
-				{% end %}
-			</tr>
+				<tr>
+					{% for column_name in stockWeb.column_names %}
+					<th>{{ column_name }}</th>
+					{% end %}
+				</tr>
 			</thead>
 		</table>
 	</div>
 
 <!-- inline scripts related to this page -->
 <script type="text/javascript">
-
 	jQuery(function($) {
-
 		var nameParam = $.getUrlVar('table_name');
 		//console.log(nameParam);
 		var myTable = $('#dynamic-table').DataTable( {
@@ -98,7 +97,6 @@
 			]
 		} );
 		myTable.buttons().container().appendTo( $('.tableTools-container') );
-
 	})
 </script>
 {% end %}

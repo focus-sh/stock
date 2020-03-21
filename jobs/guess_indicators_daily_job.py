@@ -40,7 +40,7 @@ def stat_all_lite(date):
         print('error :', e)
 
     try:
-        mysql.insert_db(data, "guess_indicators_lite_daily", False, "`date`,`code`")
+        mysql.insert_db(data, "guess_indicators_lite_daily", "`date`,`code`", False)
     except Exception as e:
         print("error :", e)
 
@@ -71,12 +71,8 @@ def stat_all_batch(date):
 
 def stat_index_all(data):
     try:
-        mysql.insert_db(
-            data=concat_guess_data(data).round(2),
-            table_name="guess_indicators_daily",
-            write_index=False,
-            primary_keys="`date`,`code`"
-        )
+        mysql.insert_db(data=concat_guess_data(data).round(2), table_name="guess_indicators_daily",
+                        primary_keys="`date`,`code`", write_index=False)
     except Exception:
         logging.exception(f'Executing function[stat_index_all] failed')
 

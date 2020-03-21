@@ -4,64 +4,93 @@ import tushare as ts
 
 from libs.executor import executor
 from libs.mysql import mysql
+from libs.tushare import tushare as ts
 
 
-def stat_all(datetime):
-    # 存款利率
-    data = ts.get_deposit_rate()
-    mysql.insert_db(data, "ts_deposit_rate", False, "`date`,`deposit_type`")
+class BasicJob:
 
-    # 贷款利率
-    data = ts.get_loan_rate()
-    mysql.insert_db(data, "ts_loan_rate", False, "`date`,`loan_type`")
+    @staticmethod
+    def stat_all(datetime):
+        ts.download_data(
+            svc_name='get_deposit_rate',
+            table_name="ts_deposit_rate",
+            primary_keys="`date`,`deposit_type`"
+        )
 
-    # 存款准备金率
-    data = ts.get_rrr()
-    mysql.insert_db(data, "ts_rrr", False, "`date`")
+        ts.download_data(
+            svc_name='get_loan_rate',
+            table_name="ts_loan_rate",
+            primary_keys="`date`,`loan_type`"
+        )
 
-    # 货币供应量
-    data = ts.get_money_supply()
-    mysql.insert_db(data, "ts_money_supply", False, "`month`")
+        ts.download_data(
+            svc_name='get_rrr',
+            table_name="ts_rrr",
+            primary_keys="`date`"
+        )
 
-    # 货币供应量(年底余额)
-    data = ts.get_money_supply_bal()
-    mysql.insert_db(data, "ts_money_supply_bal", False, "`year`")
+        ts.download_data(
+            svc_name='get_money_supply',
+            table_name="ts_money_supply",
+            primary_keys="`month`"
+        )
 
-    # 国内生产总值(年度)
-    data = ts.get_gdp_year()
-    mysql.insert_db(data, "ts_gdp_year", False, "`year`")
+        ts.download_data(
+            svc_name='get_money_supply_bal',
+            table_name="ts_money_supply_bal",
+            primary_keys="`year`")
 
-    # 国内生产总值(季度)
-    data = ts.get_gdp_quarter()
-    mysql.insert_db(data, "ts_get_gdp_quarter", False, "`quarter`")
+        ts.download_data(
+            svc_name='get_gdp_year',
+            table_name="ts_gdp_year",
+            primary_keys="`year`"
+        )
 
-    # 三大需求对GDP贡献
-    data = ts.get_gdp_for()
-    mysql.insert_db(data, "ts_gdp_for", False, "`year`")
+        ts.download_data(
+            svc_name='get_gdp_quarter',
+            table_name="ts_get_gdp_quarter",
+            primary_keys="`quarter`"
+        )
 
-    # 三大产业对GDP拉动
-    data = ts.get_gdp_pull()
-    mysql.insert_db(data, "ts_gdp_pull", False, "`year`")
+        ts.download_data(
+            svc_name='get_gdp_for',
+            table_name="ts_gdp_for",
+            primary_keys="`year`"
+        )
 
-    # 三大产业贡献率
-    data = ts.get_gdp_contrib()
-    mysql.insert_db(data, "ts_gdp_contrib", False, "`year`")
+        ts.download_data(
+            svc_name='get_gdp_pull',
+            table_name="ts_gdp_pull",
+            primary_keys="`year`"
+        )
 
-    # 居民消费价格指数
-    data = ts.get_cpi()
-    mysql.insert_db(data, "ts_cpi", False, "`month`")
+        ts.download_data(
+            svc_name='get_gdp_contrib',
+            table_name="ts_gdp_contrib",
+            primary_keys="`year`"
+        )
 
-    # 工业品出厂价格指数
-    data = ts.get_ppi()
-    mysql.insert_db(data, "ts_ppi", False, "`month`")
+        ts.download_data(
+            svc_name='get_cpi',
+            table_name="ts_cpi",
+            primary_keys="`month`"
+        )
 
-    #############################基本面数据 http://tushare.org/fundamental.html
-    # 股票列表
-    data = ts.get_stock_basics()
-    mysql.insert_db(data, "ts_stock_basics", True, "`code`")
+        ts.download_data(
+            svc_name='get_ppi',
+            table_name="ts_ppi",
+            primary_keys="`month`"
+        )
+
+        ts.download_data(
+            svc_name='get_stock_basics',
+            table_name="ts_stock_basics",
+            primary_keys="`code`",
+            write_index=True
+        )
 
 
 # main函数入口
 if __name__ == '__main__':
     mysql.create_new_schema_if_necessary()
-    executor.run_with_args(stat_all)
+    executor.run_with_args(BasicJob().stat_all)

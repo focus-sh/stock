@@ -1,11 +1,5 @@
-#!/usr/local/bin/python3
-# -*- coding: utf-8 -*-
-
 import json
 from tornado import gen
-
-import libs.pandas
-import libs.mysql
 import libs.stock_web_dic as stock_web_dic
 import web.base as webBase
 import logging
@@ -44,7 +38,7 @@ class GetStockHtmlHandler(webBase.BaseHandler):
                     stockWeb.columns.remove("eastmoney_url")
                 except Exception as e:
                     print("error :", e)
-                libs.mysql.insert(tmp_idx, "eastmoney_url")
+                stockWeb.columns.insert(tmp_idx, "eastmoney_url")
         except Exception as e:
             print("error :", e)
         logging.info("####################GetStockHtmlHandlerEnd")

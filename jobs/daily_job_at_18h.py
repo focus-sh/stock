@@ -24,7 +24,7 @@ def stat_index_all(date):
         data["date"] = date.strftime("%Y%m%d")  # 修改时间成为int类型。
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        mysql.insert_db(data, "ts_index_all", False, "`date`,`code`")
+        mysql.insert_db(data, "ts_index_all", "`date`,`code`", False)
     else:
         logging.warning('No data found by calling ts.get_index() function.')
 
@@ -35,7 +35,7 @@ def stat_today_all(date):
         data["date"] = date.strftime("%Y%m%d")
         data = data.drop_duplicates(subset="code", keep="last")
         data.head(n=1)
-        mysql.insert_db(data, "ts_today_all", False, "`date`,`code`")
+        mysql.insert_db(data, "ts_today_all", "`date`,`code`", False)
     else:
         logging.warning('No data found by calling ts.get_today_all() function.')
 

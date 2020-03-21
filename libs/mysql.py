@@ -61,13 +61,13 @@ class MySql:
         logging.info(f'Executing insert statement [{sql}] with params [{params}]')
         try:
             cursor.execute(sql, params)
-        except Exception as e:
-            print("error :", e)
+        except Exception:
+            logging.exception(f'Executing insert statement [{sql}] with params [{params}] failed')
         finally:
             cursor.close()
             connection.close()
 
-    def insert_db(self, data, table_name, write_index, primary_keys):
+    def insert_db(self, data, table_name, primary_keys, write_index):
         self.insert_other_db(self.schema, data, table_name, write_index, primary_keys)
 
     def insert_other_db(self, to_db, data, table_name, write_index, primary_keys):
@@ -76,14 +76,8 @@ class MySql:
         # 使用 http://docs.sqlalchemy.org/en/latest/core/reflection.html
         # 使用检查检查数据库表是否有主键。
         insp = inspect(engine_mysql)
-        col_name_list = data.columns.tolist()
-        # 如果有索引，把索引增加到varchar上面。
-        if write_index:
-            # 插入到第一个位置：
-            self.insert(0, data.index.name)
-        print(col_name_list)
-        data.to_sql(name=table_name, con=engine_mysql, schema=to_db, if_exists='append',
-                    dtype={col_name: NVARCHAR(length=255) for col_name in col_name_list}, index=write_index)
+
+        data.to_sql(name=table_name, con=engine_mysql, if_exists='append', index=write_index)
         # 判断是否存在主键
         if insp.get_primary_keys(table_name) == []:
             with engine_mysql.connect() as con:

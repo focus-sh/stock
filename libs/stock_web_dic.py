@@ -1,8 +1,3 @@
-#!/usr/local/bin/python
-# -*- coding: utf-8 -*-
-from libs.mysql import mysql
-
-
 class StockWebData:
     def __init__(self, mode, type, name, table_name, columns, column_names, primary_key, order_by):
         self.mode = mode  # 模式，query，editor 查询和编辑模式
@@ -350,8 +345,8 @@ for tmp in STOCK_WEB_DATA_LIST:
     try:
         # 增加columns 字段中的【东方财富】
         tmp_idx = tmp.columns.index("code")
-        mysql.insert(tmp_idx + 1, "东方财富")
-    except Exception as e:
+        tmp.column_names.insert(tmp_idx + 1, "东方财富")
+    except  Exception as e:
         print("error :", e)
 
     STOCK_WEB_DATA_MAP[tmp.table_name] = tmp
