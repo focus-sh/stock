@@ -24,7 +24,9 @@ class TuShare:
 
         if table_name is None:
             table_name = tushare.get_table_name(svc_name)
-        mysql.insert_db(data, table_name, primary_keys)
+
+        # 为了便于显示，浮点数均保留4位有效数字
+        mysql.insert_db(data.round(4), table_name, primary_keys)
         logging.info(f'Finish downloading data from service[{svc_name}]')
 
     @staticmethod

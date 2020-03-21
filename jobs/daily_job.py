@@ -8,14 +8,15 @@ from libs.tushare import tushare
 
 class DailyJob:
 
-    def run(self, date):
+    @staticmethod
+    def run(date):
         pandas.del_hist_data_cache(date)
 
         tushare.download_data(
             svc_name='top_list',
             params={
                 'args': [date.strftime("%Y-%m-%d")],
-                'kwargs': {'retry_count': 6}
+                'kwargs': {'retry_count': 3}
             },
             primary_keys=["date", "code"],
             appendix={
