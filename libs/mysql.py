@@ -67,21 +67,16 @@ class MySql:
             cursor.close()
             connection.close()
 
-    def insert_db(self, data, table_name, primary_keys, write_index):
-        self.insert_other_db(self.schema, data, table_name, write_index, primary_keys)
+    def insert_db(self, data, table_name, primary_keys):
+        self.insert_other_db(self.schema, data, table_name, primary_keys)
 
-    def insert_other_db(self, to_db, data, table_name, write_index, primary_keys):
-        # 定义engine
+    def insert_other_db(self, to_db, data, table_name, primary_keys):
         engine_mysql = self.engine_to_db(to_db)
-        # 使用 http://docs.sqlalchemy.org/en/latest/core/reflection.html
-        # 使用检查检查数据库表是否有主键。
         insp = inspect(engine_mysql)
 
-        data.to_sql(name=table_name, con=engine_mysql, if_exists='append', index=write_index)
-        # 判断是否存在主键
-        if insp.get_primary_keys(table_name) == []:
+        data.to_sql(name=table_name, con=engine_mysql, if_exists='append', index=(data.index.name is not None))
+        if not insp.get_primary_keys(table_name):
             with engine_mysql.connect() as con:
-                # 执行数据库插入数据。
                 try:
                     con.execute('ALTER TABLE `%s` ADD PRIMARY KEY (%s);' % (table_name, primary_keys))
                 except Exception as e:
