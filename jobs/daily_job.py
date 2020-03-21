@@ -1,32 +1,30 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
-import logging
-import os
-import shutil
-
-import tushare as ts
 
 from libs.executor import executor
-from libs.mysql import mysql
 from libs.pandas import pandas
+from libs.tushare import tushare
 
 
-def stat_all(date):
-    cache_dir = pandas.bash_stock_tmp % (date.strftime("%Y-%m-%d")[0:7], (date.strftime("%Y-%m-%d")))
-    if os.path.exists(cache_dir):
-        shutil.rmtree(cache_dir)
-        logging.info(f"remove cache dir force :{cache_dir}")
+class DailyJob:
 
-    data = ts.top_list(date.strftime("%Y-%m-%d"))
+    def run(self, date):
+        pandas.del_hist_data_cache(date)
 
-    if data is not None and len(data) > 0:
-        data["date"] = date.strftime("%Y%m%d")
-        data = data.drop_duplicates(subset="code", keep="last")
-        data.head(n=1)
-        mysql.insert_db(data, "ts_top_list", "`date`,`code`", False)
-    else:
-        logging.warning(f'No data found by calling ts.top_list({date.strftime("%Y-%m-%d")}) function.')
+        tushare.download_data(
+            svc_name='top_list',
+            params={
+                'args': [date.strftime("%Y-%m-%d")],
+                'kwargs': {'retry_count': 6}
+            },
+            primary_keys=["date", "code"],
+            appendix={
+                'date': date.strftime("%Y%m%d")
+            }
+        )
 
+
+daily_job = DailyJob()
 
 if __name__ == '__main__':
-    executor.run_with_args(stat_all)
+    executor.run_with_args(daily_job.run)

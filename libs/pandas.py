@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 
 import pandas as pd
 from libs.mysql import mysql
@@ -11,6 +12,12 @@ class Pandas:
 
     def __init__(self):
         self.bash_stock_tmp = env.home() + "/data/cache/hist_data_cache/%s/%s/"
+
+    def del_hist_data_cache(self, date):
+        cache_dir = self.bash_stock_tmp % (date.strftime("%Y-%m-%d")[0:7], (date.strftime("%Y-%m-%d")))
+        if os.path.exists(cache_dir):
+            shutil.rmtree(cache_dir)
+            logging.info(f"remove cache dir force :{cache_dir}")
 
     def get_hist_data_cache(self, code, date_start, date_end):
         cache_dir = self.bash_stock_tmp % (date_end[0:7], date_end)

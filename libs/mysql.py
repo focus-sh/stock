@@ -1,4 +1,5 @@
 import logging
+from functools import reduce
 
 import MySQLdb
 from sqlalchemy import create_engine, inspect, NVARCHAR
@@ -50,13 +51,13 @@ class MySql:
             if connection is not None:
                 connection.close()
 
-    def conn(self):
+    def connection(self):
         db = MySQLdb.connect(self.host, self.user, self.password, self.schema, charset="utf8")
         db.autocommit(on=True)
         return db
 
     def insert(self, sql, params=()):
-        connection = self.conn()
+        connection = self.connection()
         cursor = connection.cursor()
         logging.info(f'Executing insert statement [{sql}] with params [{params}]')
         try:
@@ -78,7 +79,8 @@ class MySql:
         if not insp.get_primary_keys(table_name):
             with engine_mysql.connect() as con:
                 try:
-                    con.execute('ALTER TABLE `%s` ADD PRIMARY KEY (%s);' % (table_name, primary_keys))
+                    con.execute(
+                        'ALTER TABLE `%s` ADD PRIMARY KEY (%s);' % (table_name, self.concat_list_params(primary_keys)))
                 except Exception as e:
                     logging.exception('Insert data into database error.')
 
@@ -87,7 +89,6 @@ class MySql:
 
     def engine_to_db(self, to_db):
         mysql_url = "mysql+mysqldb://" + self.user + ":" + self.password + "@" + self.host + "/" + to_db + "?charset=utf8"
-        logging.info(f'Create engine for MySQL: {mysql_url}')
         return create_engine(
             mysql_url,
             encoding='utf8',
@@ -100,10 +101,10 @@ class MySql:
     def count_with_where_clause(self, table_name, clause, params=()):
         sql_count = " SELECT count(1) FROM `stock_data`.`" + table_name + "` WHERE " + clause
         count = self.select_count(sql_count, params)
-        return count
+        return count if count is not None else 0
 
     def select_count(self, sql, params=()):
-        connection = self.conn()
+        connection = self.connection()
         cursor = connection.cursor()
         logging.info(f'Select count with sql{sql} and params[{params}]')
         try:
@@ -120,7 +121,7 @@ class MySql:
             connection.close()
 
     def select(self, sql, params=()):
-        with self.conn() as db:
+        with self.connection() as db:
             logging.info(f'Select data by sql[{sql}] and params[{params}]')
             try:
                 db.execute(sql, params)
@@ -135,6 +136,13 @@ class MySql:
             self.insert(del_sql)
         except Exception as e:
             print("error :", e)
+
+    @staticmethod
+    def concat_list_params(lst):
+        if isinstance(lst, str):
+            return f'`{lst}`'
+
+        return reduce(lambda x, y: f'{x}, `{y}`', lst, '')[2:]
 
 
 mysql = MySql()
