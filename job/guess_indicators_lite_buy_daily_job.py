@@ -6,9 +6,9 @@ import datetime
 import heapq
 
 import pandas as pd
-import libs.mysql
-import libs.pandas
-from libs.executor import executor
+import lib.mysql
+import lib.pandas
+from lib.executor import executor
 
 
 def stat_all_lite(date):
@@ -34,7 +34,7 @@ def stat_all_lite(date):
                             and `changepercent` > 2 and `pb` > 0 
         """
     # and `changepercent` > 2 and `pb` > 0 and `turnoverratio` > 5 去除掉换手率参数。
-    data = pd.read_sql(sql=sql_1, con=libs.mysql.engine(), params=[datetime_int])
+    data = pd.read_sql(sql=sql_1, con=lib.mysql.engine(), params=[datetime_int])
     data = data.drop_duplicates(subset="code", keep="last")
     print("######## len data ########:", len(data))
     # del data["name"]
@@ -72,7 +72,7 @@ def stat_all_lite(date):
     del data_new["trade_float32"]
 
     try:
-        libs.mysql.insert_db(data_new, table_name, False, "`code`")
+        lib.mysql.insert_db(data_new, table_name, False, "`code`")
         print("insert_db")
     except Exception as e:
         print("error :", e)

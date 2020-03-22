@@ -13,7 +13,7 @@ import web.base as webBase
 import web.dataEditorHandler as dataEditorHandler
 import web.dataIndicatorsHandler as dataIndicatorsHandler
 import web.dataTableHandler as dataTableHandler
-from libs.mysql import mysql
+from lib.mysql import mysql
 
 
 class Application(tornado.web.Application):

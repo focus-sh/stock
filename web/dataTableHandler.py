@@ -1,6 +1,6 @@
 import json
 from tornado import gen
-import libs.stock_web_dic as stock_web_dic
+import lib.stock_web_dic as stock_web_dic
 import web.base as webBase
 import logging
 import datetime

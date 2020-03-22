@@ -7,7 +7,7 @@ import datetime
 import pandas as pd
 import stockstats
 
-from libs.executor import executor
+from lib.executor import executor
 
 
 def apply_merge(tmp):

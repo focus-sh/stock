@@ -9,7 +9,7 @@ import logging
 from bokeh.plotting import figure
 from bokeh.embed import components
 import datetime
-import libs.executor as common
+import lib.executor as common
 import stockstats
 import numpy as np
 import pandas as pd

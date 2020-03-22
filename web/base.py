@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tornado.web
-import libs.stock_web_dic as stock_web_dic
+import lib.stock_web_dic as stock_web_dic
 
 #基础handler，主要负责检查mysql的数据库链接。
 class BaseHandler(tornado.web.RequestHandler):

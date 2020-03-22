@@ -125,9 +125,9 @@ http://docs.pythontab.com/tornado/introduction-to-tornado/
 
 最终的数据都到前端展示出来。主要分为4个文件夹。
 
-> jobs 抓取数据并存储实现类。
+> job 抓取数据并存储实现类。
 
-> libs 通用工具类。
+> lib 通用工具类。
 
 > web 前端展示框架。
 

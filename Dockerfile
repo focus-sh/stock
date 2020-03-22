@@ -58,7 +58,11 @@ RUN echo `date +%Y-%m-%d:%H:%M:%S` >> /etc/docker.build && \
     sed -i -e 's/itertools\.izip/zip/g' \
     /usr/local/lib/python3.6/site-packages/torndb.py  && \
     sed -i -e 's/\+ CONVERSIONS\[field_type\]/\+ \[CONVERSIONS\[field_type\],bytes\]/g' \
-    /usr/local/lib/python3.6/site-packages/torndb.py
+    /usr/local/lib/python3.6/site-packages/torndb.py && \
+    sed -i -e 's/from sqlalchemy.types import (/from sqlalchemy.types import (VARCHAR,/g' \
+    /usr/local/lib/python3.6/site-packages/pandas/io/sql.py  && \
+    sed -i -e 's/return Text/return VARCHAR(length=255)/g'  \
+    /usr/local/lib/python3.6/site-packages/pandas/io/sql.py
 
 # 增加 TensorFlow 的支持，使用最新的2.0 编写代码。目前还是使用 1.x 吧，还没有学明白。
 # RUN pip3 install tensorflow==2.0.0-rc1 keras
@@ -90,17 +94,18 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin \n\
 EXPOSE 8888 9999
 
 #经常修改放到最后：
-ADD jobs /data/stock/jobs
-ADD libs /data/stock/libs
+ADD job /data/stock/job
+ADD lib /data/stock/lib
 ADD web /data/stock/web
+ADD model /data/stock/model
 ADD supervisor /etc/supervisor
 
-ADD jobs/cron.minutely /etc/cron.minutely
-ADD jobs/cron.hourly /etc/cron.hourly
-ADD jobs/cron.daily /etc/cron.daily
-ADD jobs/cron.monthly /etc/cron.monthly
+ADD job/cron.minutely /etc/cron.minutely
+ADD job/cron.hourly /etc/cron.hourly
+ADD job/cron.daily /etc/cron.daily
+ADD job/cron.monthly /etc/cron.monthly
 
-RUN mkdir -p /data/logs && ls /data/stock/ && chmod 755 /data/stock/jobs/run_* &&  \
+RUN mkdir -p /data/logs && ls /data/stock/ && chmod 755 /data/stock/job/run_* &&  \
     chmod 755 /etc/cron.minutely/* && chmod 755 /etc/cron.hourly/* && \
     chmod 755 /etc/cron.daily/* && chmod 755 /etc/cron.monthly/*
 
