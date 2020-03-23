@@ -40,6 +40,10 @@
 + web应用的入口在：web/main.py文件，运行该文件
 + 本地访问地址：http://localhost:9999
 
+### 日志
+在[executor.py](/job/lib/executor.py)中增加了日志处理功能，使用环境变量指定日志参数
++ LOGGING_LEVEL 日志级别，默认为INFO
++ LOGGING_PATH 文件日志路径，默认为～/logs
 
 ### 使用方法（依赖docker）
 
