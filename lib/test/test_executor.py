@@ -9,7 +9,8 @@ class TestExecutor(unittest.TestCase):
 
     def test_logging(self):
         logger = logging.getLogger()
-        logger.setLevel(logging.INFO)
+        logger_level = getattr(logging, 'INFO')
+        logger.setLevel(logger_level)
         rq = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
         log_path = env.home() + '/logs/'
         if not os.path.exists(log_path):
