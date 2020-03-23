@@ -10,15 +10,13 @@ from lib.executor import executor
 from lib.mysql import mysql
 from lib.numpy import numpy
 from lib.pandas import pandas
+from model.stock_statistics_buy_lite import stock_statistics_buy_lite
 from model.stock_statistics_lite import stock_statistics_lite
 
 
-class GuessIndicatorsLiteBuyDailyJob:
+class CalculateStockStatisticsBuy:
 
-    def stat_all_lite(self, date):
-        # 要操作的数据库表名称。
-        table_name = "stock_statistics_lite"
-
+    def run(self, date):
         data = stock_statistics_lite.select(
             date=date,
             min_change_percent=0,
@@ -26,50 +24,39 @@ class GuessIndicatorsLiteBuyDailyJob:
         )
 
         # 输入 date 用作历史数据查询。
-        stock_merge = pd.DataFrame(
+        statistics = pd.DataFrame(
             data={
                 "date": data["date"],
                 "code": data["code"],
-                "wave_mean": data["trade"],
-                "wave_crest": data["trade"],
-                "wave_base": data["trade"]
             },
             index=data.index.values
         )
 
-        stock_merge = stock_merge.apply(
+        statistics = statistics.apply(
             lambda row: self.calculate_statistics(
                 code=row['code'],
                 date=row['date'],
             ),
             axis=1
         )
-        del stock_merge["date"]
-        data = pd.merge(data, stock_merge, on=['code'], how='left')
+        statistics.drop('date', axis=1, inplace=True)
+        statistics = pd.merge(data, statistics, on=['code'], how='left')
 
-        data = data[data["trade"] > data["wave_base"]]
-        data = data[data["trade"] < data["wave_crest"]]
+        statistics = statistics[statistics["trade"] > statistics["wave_base"]]
+        statistics = statistics[statistics["trade"] < statistics["wave_crest"]]
 
-        data["up_rate"] = (data["wave_mean"].sub(data["trade"])).div(data["wave_crest"]).mul(100)
+        statistics["up_rate"] = (statistics["wave_mean"].sub(statistics["trade"])).div(statistics["wave_crest"]).mul(100)
 
-        data["buy"] = 1
-        data["sell"] = 0
-        data["today_trade"] = data["trade"]
-        data["income"] = 0
+        statistics["buy"] = 1
+        statistics["sell"] = 0
+        statistics["today_trade"] = data["trade"]
+        statistics["income"] = 0
 
-        data = data.rename(columns={'date': 'buy_date'})
+        statistics = statistics.rename(columns={'date': 'buy_date'})
+        stock_statistics_buy_lite.insert(statistics)
 
-        try:
-            mysql.insert_db(
-                data=data,
-                table_name=table_name,
-                primary_keys=["buy_date", "code"]
-            )
-            print("insert_db")
-        except Exception as e:
-            print("error :", e)
-
-    def calculate_statistics(self, date, code):
+    @staticmethod
+    def calculate_statistics(date, code):
         stock_name_list = ['date', 'code', 'wave_mean', 'wave_crest', 'wave_base']
         stock_data_list = [date, code]
 
@@ -85,7 +72,7 @@ class GuessIndicatorsLiteBuyDailyJob:
         return pd.Series(stock_data_list, index=stock_name_list)
 
 
-daily_job = GuessIndicatorsLiteBuyDailyJob()
+calculate_stock_statistics_buy = CalculateStockStatisticsBuy()
 
 if __name__ == '__main__':
-    executor.run_with_args(daily_job.stat_all_lite)
+    executor.run_with_args(calculate_stock_statistics_buy.run)

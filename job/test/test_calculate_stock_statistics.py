@@ -9,7 +9,7 @@ from job.calculate_stock_statistics import stock_stats_index_calculator as calcu
 from model.ss_stock_statistics import ss_stock_statistics
 
 
-class TestGuessIndicatorsDailyJob(unittest.TestCase):
+class TestCalculateStockStatistics(unittest.TestCase):
     @unittest.skip
     def test_calculate_stock_statistics(self):
         stock_stats_index_calculator.run(datetime.date(2019, 2, 11))

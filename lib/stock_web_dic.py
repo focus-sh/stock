@@ -268,8 +268,8 @@ STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
         type="每日数据猜想",
-        name="每日股票指标lite猜想买入",
-        table_name="guess_indicators_lite_buy_daily",
+        name="每日股票买入点",
+        table_name="stock_statistics_buy_lite",
         columns=["buy_date", "code", "name", "changepercent", "trade", "turnoverratio", "pb",
                  "kdjj", "rsi_6", "cci", "wave_base", "wave_crest", "wave_mean", "up_rate", "buy", "sell",
                  "today_trade", "income"],

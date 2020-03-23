@@ -3,15 +3,18 @@ import unittest
 from unittest.mock import patch
 import pandas as pd
 
-from job.guess_indicators_lite_buy_daily_job import daily_job
+from job.calculate_stock_statistics_buy import calculate_stock_statistics_buy
 
 
-class TestGuessIndicatorsLiteBuyDailyJob(unittest.TestCase):
+class TestCalculateStockStatisticsBuy(unittest.TestCase):
+    @unittest.skip
+    def test_run_0(self):
+        calculate_stock_statistics_buy.run(datetime.date(2019, 2, 11))
 
     @patch('lib.mysql.mysql.insert_db')
     @patch('model.stock_statistics_lite.stock_statistics_lite.select')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
-    def test_stat_all_lite(self, stock_statistics_lite_select, mysql_insert_db):
+    def test_run(self, stock_statistics_lite_select, mysql_insert_db):
         stock_statistics_lite_select.return_value = pd.DataFrame(
             {
                 'date': {0: '20190211', 1: '20190211', 2: '20190211', 3: '20190211', 4: '20190211'},
@@ -48,7 +51,7 @@ class TestGuessIndicatorsLiteBuyDailyJob(unittest.TestCase):
             'income': {3: 0, 4: 0}
         }
 
-        daily_job.stat_all_lite(datetime.date(2019, 2, 11))
+        calculate_stock_statistics_buy.run(datetime.date(2019, 2, 11))
         (), kwargs = mysql_insert_db.call_args
         self.assertDictEqual(kwargs['data'].to_dict(), index)
 
@@ -61,6 +64,6 @@ class TestGuessIndicatorsLiteBuyDailyJob(unittest.TestCase):
             'wave_crest': 0,
             'wave_base': 0
         }
-        result = daily_job.calculate_statistics(code='002949', date='20190211')
+        result = calculate_stock_statistics_buy.calculate_statistics(code='002949', date='20190211')
         self.assertDictEqual(result.to_dict(), index)
 
