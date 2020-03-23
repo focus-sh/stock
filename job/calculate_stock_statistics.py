@@ -3,47 +3,16 @@ import math
 import pandas as pd
 
 from lib.executor import executor
-from lib.mysql import mysql
 from lib.stockstats import stockstats
 from model.ss_stock_statistics import ss_stock_statistics
+from model.stock_statistics_lite import stock_statistics_lite
 from model.ts_today_all import ts_today_all
-
-
-class GuessIndicatorsDailyJob:
-
-    def stat_all_lite(self, date):
-        sql_1 = """
-                SELECT `date`, `code`, `name`, `changepercent`, `trade`, `open`, `high`, `low`, 
-                                `settlement`, `volume`, `turnoverratio`, `amount`, `per`, `pb`, `mktcap`,
-                                 `nmc` ,`kdjj`,`rsi_6`,`cci`
-                            FROM stock_data.guess_indicators_daily WHERE `date` = %s 
-                            and kdjk >= 80 and kdjd >= 70 and kdjj >= 90  and rsi_6 >= 50  and cci >= 100
-        """
-
-        try:
-            del_sql = " DELETE FROM `stock_data`.`guess_indicators_lite_daily` WHERE `date`= '%s' " % date.strftime(
-                "%Y%m%d")
-            mysql.insert(del_sql)
-        except Exception as e:
-            print("error :", e)
-
-        try:
-            data = pd.read_sql(sql=sql_1, con=mysql.engine(), params=[date.strftime("%Y%m%d")])
-            data = data.drop_duplicates(subset="code", keep="last")
-        except Exception as e:
-            print('error :', e)
-
-        try:
-            mysql.insert_db(data, "guess_indicators_lite_daily", "`date`,`code`", False)
-        except Exception as e:
-            print("error :", e)
 
 
 class StockStatsIndexCalculator:
 
     def __init__(self):
         self.batch_size = 100
-        self.table_name = 'stock_stats_index'
 
     def run(self, date):
         ss_stock_statistics.delete(date)
@@ -75,9 +44,25 @@ class StockStatsIndexCalculator:
         return pd.merge(data, statistics, on=['code'], how='left')
 
 
-daily_job = GuessIndicatorsDailyJob()
+class StockStatisticsFilter:
+
+    @staticmethod
+    def filter(date):
+        stock_statistics_lite.delete(date)
+        data = ss_stock_statistics.select(
+            date=date,
+            min_kdjk=80,
+            min_kdjd=70,
+            min_kdjj=90,
+            min_rsi_6=50,
+            min_cci=100
+        )
+        stock_statistics_lite.insert(data)
+
+
+stock_statistics_filter = StockStatisticsFilter()
 stock_stats_index_calculator = StockStatsIndexCalculator()
 
 if __name__ == '__main__':
     executor.run_with_args(stock_stats_index_calculator.run)
-    executor.run_with_args(daily_job.stat_all_lite)
+    executor.run_with_args(stock_statistics_filter.filter)

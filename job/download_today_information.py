@@ -7,13 +7,13 @@ from lib.pandas import pandas
 from lib.tushare import tushare
 
 
-class DelHisDataJob:
+class DelHisCacheData:
     @staticmethod
     def run(date):
         pandas.del_hist_data_cache(date)
 
 
-class DownloadTopListJob:
+class DownloadTopList:
     @staticmethod
     def run(date):
         tushare.download_data(
@@ -29,7 +29,7 @@ class DownloadTopListJob:
         )
 
 
-class DownloadIndexJob:
+class DownloadIndex:
     @staticmethod
     def run(date):
         tushare.download_data(
@@ -41,7 +41,7 @@ class DownloadIndexJob:
         )
 
 
-class DownloadTodayAllJob:
+class DownloadTodayAll:
     @staticmethod
     def run(date):
         tushare.download_data(
@@ -53,14 +53,14 @@ class DownloadTodayAllJob:
         )
 
 
-del_his_data_job = DelHisDataJob()
-download_top_list_job = DownloadTopListJob()
-download_index_job = DownloadIndexJob()
-download_today_all_job = DownloadTodayAllJob()
+del_his_cache_data = DelHisCacheData()
+download_top_list = DownloadTopList()
+download_index = DownloadIndex()
+download_today_all = DownloadTodayAll()
 
 if __name__ == '__main__':
-    executor.run_with_args(del_his_data_job.run)
-    executor.run_with_args(download_top_list_job.run)
-    executor.run_with_args(download_index_job.run)
+    executor.run_with_args(del_his_cache_data.run)
+    executor.run_with_args(download_top_list.run)
+    executor.run_with_args(download_index.run)
     time.sleep(5)  # 停止5秒
-    executor.run_with_args(download_today_all_job.run)
+    executor.run_with_args(download_today_all.run)

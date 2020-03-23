@@ -72,11 +72,10 @@ class MySql:
         self.insert_other_db(self.schema, data, table_name, primary_keys)
 
     def insert_other_db(self, to_db, data, table_name, primary_keys):
+        data = data.round(4)  # 入库数据中浮点数，统一保留4位小数
         engine_mysql = self.engine_to_db(to_db)
-        insp = inspect(engine_mysql)
-
         data.to_sql(name=table_name, con=engine_mysql, if_exists='append', index=(data.index.name is not None))
-        if not insp.get_primary_keys(table_name):
+        if not inspect(engine_mysql).get_primary_keys(table_name):
             with engine_mysql.connect() as con:
                 try:
                     con.execute(

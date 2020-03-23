@@ -4,8 +4,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from job.guess_indicators_daily_job import stock_stats_index_calculator as calculator
-from lib.mysql import mysql
+from job.calculate_stock_statistics import stock_stats_index_calculator as calculator
 from model.ss_stock_statistics import ss_stock_statistics
 
 
@@ -14,7 +13,7 @@ class TestGuessIndicatorsDailyJob(unittest.TestCase):
     @patch('lib.mysql.mysql.insert_db')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
     @patch('lib.pandas.pandas.create_data_frame_by_sql')
-    @patch('job.guess_indicators_daily_job.stock_stats_index_calculator.batch_size', 1)
+    @patch('job.calculate_stock_statistics.stock_stats_index_calculator.batch_size', 1)
     @patch('lib.mysql.mysql.count_by_date')
     @patch('lib.mysql.mysql.del_by_date')
     @patch('lib.mysql.mysql.count_with_where_clause')
@@ -96,10 +95,6 @@ class TestGuessIndicatorsDailyJob(unittest.TestCase):
                  'trix': -0.48744444168323703, 'trix_9_sma': -0.26238522279917836, 'vr': 61.83256612156151,
                  'vr_6_sma': 60.3181684411804, 'wr_10': 79.46127946127949, 'wr_6': 77.15355805243448}
         self.assertAlmostEqual(result.loc[0].to_dict(), index)
-
-    def test_count_table_by_day(self):
-        date = datetime.date(1888, 1, 1)
-        self.assertEqual(mysql.count_by_date('guess_indicators_daily', date), 0)
 
 
 class TestDateMethod(unittest.TestCase):
