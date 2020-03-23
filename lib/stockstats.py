@@ -1,10 +1,9 @@
-import datetime
-
+import numpy as np
+import pandas as pd
 import stockstats as ss
 
+from lib.numpy import numpy
 from lib.pandas import pandas
-import pandas as pd
-import numpy as np
 
 
 class StockStats:
@@ -24,13 +23,11 @@ class StockStats:
             'close_-1_r',
             # close price change (in percent) between today and the day before yesterday.
             'close_-2_r',
-            'code',
             # CR indicator, including 5, 10, 20 days moving average
             'cr',
             'cr-ma1',  # default to 5
             'cr-ma2',  # default to 10
             'cr-ma3',  # default to 20
-            'date',
             'dma',  # Different of Moving Average (10, 50)
             'dx',  # DX, default to 14 days of +DI and -DI
             # KDJ, default to 9 days
@@ -59,52 +56,26 @@ class StockStats:
         ]
 
     def calculate_statistics(self, code, date):
-        date_end = datetime.datetime.strptime(date, "%Y%m%d")
-        date_start = (date_end + datetime.timedelta(days=-300)).strftime("%Y-%m-%d")
-        date_end = date_end.strftime("%Y-%m-%d")
+        stock = pandas.get_stock_hist_data_cache(code, date)
 
-        stock = pandas.get_hist_data_cache(code, date_start, date_end)
-        # 设置返回数组。
-        stock_data_list = []
-        stock_name_list = []
-        # 增加空判断，如果是空返回 0 数据。
-        if stock is None:
-            for col in self.stock_column:
-                if col == 'date':
-                    stock_data_list.append(date)
-                    stock_name_list.append('date')
-                elif col == 'code':
-                    stock_data_list.append(code)
-                    stock_name_list.append('code')
-                else:
-                    stock_data_list.append(0)
-                    stock_name_list.append(col)
-            return pd.Series(stock_data_list, index=stock_name_list)
+        stock_name_list = ['code', 'date']
+        stock_data_list = [code, date]
 
-        stock = stock.sort_index(0)  # 将数据按照日期排序下。
-
-        stock["date"] = stock.index.values  # 增加日期列。
-        stock = stock.sort_index(0)  # 将数据按照日期排序下。
-
-        stock_stat = ss.StockDataFrame.retype(stock)
+        stock_stats = ss.StockDataFrame.retype(stock)
 
         for col in self.stock_column:
-            if col == 'date':
-                stock_data_list.append(date)
-                stock_name_list.append('date')
-            elif col == 'code':
-                stock_data_list.append(code)
-                stock_name_list.append('code')
-            else:
-                # 将数据的最后一个返回。
-                tmp_val = stock_stat[col].tail(1).values[0]
-                if np.isinf(tmp_val):  # 解决值中存在INF问题。
-                    tmp_val = 0
-                if np.isnan(tmp_val):  # 解决值中存在NaN问题。
-                    tmp_val = 0
-                stock_data_list.append(tmp_val)
-                stock_name_list.append(col)
+            stock_name_list.append(col)
+            val = self.get_stock_stats_val(stock_stats, col)
+            stock_data_list.append(val)
         return pd.Series(stock_data_list, index=stock_name_list)
+
+    @staticmethod
+    def get_stock_stats_val(stock_stats, name):
+        values = stock_stats[name].tail(1)
+        if values.empty:
+            return 0
+
+        return numpy.get_valid_val(values[0])
 
 
 stockstats = StockStats()

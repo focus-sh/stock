@@ -17,7 +17,7 @@ echo "###################"$DATE"###################" >> /data/logs/daily.3.log
 
 echo "###################"$DATE"###################" >> /data/logs/daily.4.log
 #使用股票指标预测。
-/usr/local/bin/python3 /data/stock/job/calculate_stock_statistics.py >> /data/logs/daily.4.log
+/usr/local/bin/python3 /data/stock/job/~.py >> /data/logs/daily.4.log
 
 echo "###################"$DATE"###################" >> /data/logs/daily.5.log
 #使用股票指标预测购买。

@@ -4,11 +4,16 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from job.calculate_stock_statistics import stock_stats_index_calculator as calculator
+from job.calculate_stock_statistics import stock_stats_index_calculator as calculator, stock_stats_index_calculator, \
+    stock_statistics_filter
 from model.ss_stock_statistics import ss_stock_statistics
 
 
 class TestGuessIndicatorsDailyJob(unittest.TestCase):
+    @unittest.skip
+    def test_calculate_stock_statistics(self):
+        stock_stats_index_calculator.run(datetime.date(2019, 2, 11))
+        stock_statistics_filter.filter(datetime.date(2019, 2, 11))
 
     @patch('lib.mysql.mysql.insert_db')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))

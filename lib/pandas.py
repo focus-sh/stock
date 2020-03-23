@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import shutil
@@ -18,6 +19,14 @@ class Pandas:
         if os.path.exists(cache_dir):
             shutil.rmtree(cache_dir)
             logging.info(f"remove cache dir force :{cache_dir}")
+
+    def get_stock_hist_data_cache(self, code, date):
+        date_end = datetime.datetime.strptime(date, "%Y%m%d")
+        date_start = (date_end + datetime.timedelta(days=-300)).strftime("%Y-%m-%d")
+        date_end = date_end.strftime("%Y-%m-%d")
+
+        stock = self.get_hist_data_cache(code, date_start, date_end)
+        return stock.sort_index(axis=0)  # 按日期排序
 
     def get_hist_data_cache(self, code, date_start, date_end):
         cache_dir = self.bash_stock_tmp % (date_end[0:7], date_end)
