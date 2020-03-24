@@ -16,6 +16,11 @@ class Numpy:
     def get_valid_mean(self, lst):
         return self.get_valid_val(np.mean(lst))
 
+    def get_valid_ele(self, lst, index):
+        if index < 0 or index >= len(lst):
+            return 0
+        return self.get_valid_val(lst[index])
+
     @staticmethod
     def get_valid_val(val):
         if val is None or np.isinf(val) or np.isnan(val):

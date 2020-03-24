@@ -25,7 +25,7 @@ echo "###################"$DATE"###################" >> /data/logs/daily.5.log
 
 echo "###################"$DATE"###################" >> /data/logs/daily.6.log
 #使用股票指标预测卖出。
-/usr/local/bin/python3 /data/stock/job/guess_indicators_lite_sell_daily_job.py >> /data/logs/daily.6.log
+/usr/local/bin/python3 /data/stock/job/calculate_stock_statistics_sell.py >> /data/logs/daily.6.log
 
 #清除前3天数据。
 DATE_20=`date -d '-20 days' +%Y-%m-%d`

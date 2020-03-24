@@ -7,14 +7,14 @@ from job.calculate_stock_statistics_buy import calculate_stock_statistics_buy
 
 
 class TestCalculateStockStatisticsBuy(unittest.TestCase):
-    @unittest.skip
+    # @unittest.skip
     def test_run_0(self):
         calculate_stock_statistics_buy.run(datetime.date(2019, 2, 11))
 
-    @patch('lib.mysql.mysql.insert_db')
+    @patch('model.stock_statistics_buy.stock_statistics_buy.insert')
     @patch('model.stock_statistics_lite.stock_statistics_lite.select')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
-    def test_run(self, stock_statistics_lite_select, mysql_insert_db):
+    def test_run(self, stock_statistics_lite_select, stock_statistics_buy_insert):
         stock_statistics_lite_select.return_value = pd.DataFrame(
             {
                 'date': {0: '20190211', 1: '20190211', 2: '20190211', 3: '20190211', 4: '20190211'},
@@ -45,15 +45,14 @@ class TestCalculateStockStatisticsBuy(unittest.TestCase):
             'wave_crest': {3: 20.72, 4: 11.556666666666667},
             'wave_base': {3: 11.043333333333331, 4: 7.19},
             'up_rate': {3: -7.299286005316164, 4: -4.823946673082753},
-            'buy': {3: 1, 4: 1},
-            'sell': {3: 0, 4: 0},
+            'buy': {3: 1, 4: 1}, 'sell': {3: 0, 4: 0},
             'today_trade': {3: 16.28, 4: 9.27},
             'income': {3: 0, 4: 0}
         }
 
         calculate_stock_statistics_buy.run(datetime.date(2019, 2, 11))
-        (), kwargs = mysql_insert_db.call_args
-        self.assertDictEqual(kwargs['data'].to_dict(), index)
+        [statistics], _ = stock_statistics_buy_insert.call_args
+        self.assertDictEqual(statistics.to_dict(), index)
 
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
     def test_calculate_statistics_when_stock_none(self):

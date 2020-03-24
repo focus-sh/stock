@@ -10,7 +10,7 @@ from lib.executor import executor
 from lib.mysql import mysql
 from lib.numpy import numpy
 from lib.pandas import pandas
-from model.stock_statistics_buy_lite import stock_statistics_buy_lite
+from model.stock_statistics_buy import stock_statistics_buy
 from model.stock_statistics_lite import stock_statistics_lite
 
 
@@ -53,7 +53,7 @@ class CalculateStockStatisticsBuy:
         statistics["income"] = 0
 
         statistics = statistics.rename(columns={'date': 'buy_date'})
-        stock_statistics_buy_lite.insert(statistics)
+        stock_statistics_buy.insert(statistics)
 
     @staticmethod
     def calculate_statistics(date, code):
