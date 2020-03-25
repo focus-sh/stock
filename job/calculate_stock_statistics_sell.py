@@ -18,15 +18,7 @@ class CalculateStockStatisticsSell:
         data = stock_statistics_buy.select(date)
         data["date"] = date.strftime("%Y%m%d")
 
-        statistics = pd.DataFrame(
-            data={
-                "date": data["date"],
-                "code": data["code"],
-            },
-            index=data.index.values
-        )
-
-        statistics = statistics.apply(
+        statistics = data.apply(
             lambda row: self.calculate_statistics(
                 code=row['code'],
                 date=row['date'],

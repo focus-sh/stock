@@ -2,10 +2,10 @@ from lib.mysql import mysql
 from lib.pandas import pandas
 
 
-class StockStatisticsLite:
+class StockStatistics:
 
     def __init__(self):
-        self.table_name = 'stock_statistics_lite'
+        self.table_name = 'stock_statistics'
 
         self.select_sql = f"""
 SELECT 
@@ -47,4 +47,4 @@ WHERE
         )
 
 
-stock_statistics_lite = StockStatisticsLite()
+stock_statistics = StockStatistics()

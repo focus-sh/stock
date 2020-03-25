@@ -70,6 +70,20 @@ class StockStats:
         return pd.Series(stock_data_list, index=stock_name_list)
 
     @staticmethod
+    def calculate_wave(code, date, max_point=3):
+        stock_name_list = ['date', 'code', 'wave_mean', 'wave_crest', 'wave_base']
+        stock_data_list = [date, code]
+
+        stock = pandas.get_stock_hist_data_cache(code, date)
+        price_list = pd.Series(stock["close"].values).to_list()
+        stock_data_list.append(numpy.get_valid_mean(price_list))
+
+        stock_data_list.append(numpy.get_valid_nlargest_mean(max_point, price_list))
+        stock_data_list.append(numpy.get_valid_nsmallest_mean(max_point, price_list))
+
+        return pd.Series(stock_data_list, index=stock_name_list)
+
+    @staticmethod
     def get_stock_stats_val(stock_stats, name):
         values = stock_stats[name].tail(1)
         if values.empty:
@@ -77,5 +91,8 @@ class StockStats:
 
         return numpy.get_valid_val(values[0])
 
+    @staticmethod
+    def calculate_up_rate(wave_mean, trade, wave_crest):
+        return wave_mean.sub(trade).div(wave_crest).mul(100)
 
 stockstats = StockStats()

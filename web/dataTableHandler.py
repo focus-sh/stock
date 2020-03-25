@@ -128,7 +128,7 @@ class GetStockDataHandler(webBase.BaseHandler):
             stock_web.table_name, search_sql, order_by_sql, limit_sql)
         count_sql = " SELECT count(1) as num FROM `%s` %s " % (stock_web.table_name, search_sql)
 
-        logging.info("select sql : " + sql)
+        logging.info("paged_select sql : " + sql)
         logging.info("count sql : " + count_sql)
         stock_web_list = self.db.query(sql)
 

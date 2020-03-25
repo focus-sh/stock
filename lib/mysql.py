@@ -26,7 +26,7 @@ class MySql:
             )
 
             cursor = connection.cursor()
-            cursor.execute(" select 1 ")
+            cursor.execute(" paged_select 1 ")
         except Exception:
             logging.info(f"The schema[{mysql.schema}] doesnt exist, create a new one.")
             self.create_new_schema(self.schema)
@@ -110,7 +110,7 @@ class MySql:
             else:
                 return 0
         except MySQLdb.ProgrammingError:
-            logging.exception('Execute select count statement error')
+            logging.exception('Execute paged_select count statement error')
             return 0
         finally:
             cursor.close()

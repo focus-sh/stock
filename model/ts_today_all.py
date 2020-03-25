@@ -46,7 +46,15 @@ LIMIT %s , %s"""
             clause=self.where_clause,
         )
 
-    def select(self, date, begin, size):
+    def select(self, date):
+        return pandas.create_data_frame_by_sql(
+            sql=self.select_sql + self.where_clause,
+            params=[date.strftime("%Y%m%d")],
+            subset='code',
+            keep='last'
+        )
+
+    def paged_select(self, date, begin, size):
         return pandas.create_data_frame_by_sql(
             sql=self.select_sql + self.where_clause + self.pagination_filter,
             params=[date.strftime("%Y%m%d"), begin, size],

@@ -7,12 +7,12 @@ from job.calculate_stock_statistics_buy import calculate_stock_statistics_buy
 
 
 class TestCalculateStockStatisticsBuy(unittest.TestCase):
-    # @unittest.skip
+    @unittest.skip
     def test_run_0(self):
         calculate_stock_statistics_buy.run(datetime.date(2019, 2, 11))
 
     @patch('model.stock_statistics_buy.stock_statistics_buy.insert')
-    @patch('model.stock_statistics_lite.stock_statistics_lite.select')
+    @patch('model.stock_statistics.stock_statistics.select')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
     def test_run(self, stock_statistics_lite_select, stock_statistics_buy_insert):
         stock_statistics_lite_select.return_value = pd.DataFrame(
@@ -53,16 +53,4 @@ class TestCalculateStockStatisticsBuy(unittest.TestCase):
         calculate_stock_statistics_buy.run(datetime.date(2019, 2, 11))
         [statistics], _ = stock_statistics_buy_insert.call_args
         self.assertDictEqual(statistics.to_dict(), index)
-
-    @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
-    def test_calculate_statistics_when_stock_none(self):
-        index = {
-            'date': '20190211',
-            'code': '002949',
-            'wave_mean': 0,
-            'wave_crest': 0,
-            'wave_base': 0
-        }
-        result = calculate_stock_statistics_buy.calculate_statistics(code='002949', date='20190211')
-        self.assertDictEqual(result.to_dict(), index)
 

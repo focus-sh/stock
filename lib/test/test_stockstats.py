@@ -85,3 +85,15 @@ class TestStockStats(unittest.TestCase):
         }
         result = stockstats.calculate_statistics(code='002949', date='20190211')
         self.assertDictEqual(result.to_dict(), index)
+
+    @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
+    def test_calculate_wave_when_stock_none(self):
+        index = {
+            'date': '20190211',
+            'code': '002949',
+            'wave_mean': 0,
+            'wave_crest': 0,
+            'wave_base': 0
+        }
+        result = stockstats.calculate_wave(code='002949', date='20190211')
+        self.assertDictEqual(result.to_dict(), index)
