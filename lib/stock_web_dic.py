@@ -210,7 +210,7 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据猜想",
+        type="模型预测",
         name="波浪理论预测",
         table_name="period_wave_index",
         columns=["date", "code", "name", "wave_base", "wave_crest", "wave_mean", "up_rate",
@@ -228,7 +228,7 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据猜想",
+        type="模型预测",
         name="回归模型预测",
         table_name="period_return_index",
         columns=["date", "code", "name",
@@ -248,7 +248,7 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据猜想",
+        type="模型预测",
         name="每日股票指标刷选",
         table_name="stock_statistics",
         columns=["date", "code", "name", "changepercent", "trade", "open", "high", "low", "settlement", "volume",
@@ -267,7 +267,7 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据猜想",
+        type="模型预测",
         name="每日股票买入点",
         table_name="stock_statistics_buy",
         columns=["buy_date", "code", "name", "changepercent", "trade", "turnoverratio", "pb",
@@ -284,7 +284,7 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据猜想",
+        type="模型预测",
         name="每日股票卖出点",
         table_name="stock_statistics_sell",
         columns=["date", "buy_date", "code", "name", "changepercent", "trade", "turnoverratio", "pb",
@@ -302,7 +302,7 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据猜想",
+        type="模型预测",
         name="每日股票指标",
         table_name="ss_stock_statistics",
         columns=["date", "code", "name", "changepercent", "trade", "open", "high", "low", "settlement", "volume",
@@ -326,7 +326,7 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据猜想",
+        type="模型预测",
         name="线性回归模型预测",
         table_name="stock_sklearn_index",
         columns=["date", "code", "name", "changepercent", "trade", "open", "high", "low", "settlement", "volume",

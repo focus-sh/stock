@@ -4,7 +4,7 @@ from functools import reduce
 import MySQLdb
 from sqlalchemy import create_engine, inspect
 from lib.environment import environment as env
-
+from MySQLdb import ProgrammingError
 
 class MySql:
 
@@ -130,8 +130,8 @@ class MySql:
         try:
             del_sql = " DELETE FROM `stock_data`.`" + table_name + "` WHERE `date`= %s " % date.strftime("%Y%m%d")
             self.insert(del_sql)
-        except Exception as e:
-            print("error :", e)
+        except ProgrammingError:
+            logging.exception(f'Delete table{table_name} by date{date} failed')
 
     @staticmethod
     def count_sql(table_name, where_clause):

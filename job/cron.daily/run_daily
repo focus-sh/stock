@@ -7,25 +7,29 @@ echo "###################"$DATE"###################" >> /data/logs/daily.0.log
 #增加每日，龙虎榜数据。
 /usr/local/bin/python3 /data/stock/job/download_today_information.py >> /data/logs/daily.0.log
 
-echo "###################"$DATE"###################" >> /data/logs/daily.2.log
+echo "###################"$DATE"###################" >> /data/logs/daily.1.log
 #使用波峰波谷方法猜想股票涨跌
-/usr/local/bin/python3 /data/stock/job/calculate_period_wave_index.py >> /data/logs/daily.2.log
+/usr/local/bin/python3 /data/stock/job/calculate_period_wave_index.py >> /data/logs/daily.1.log
+
+echo "###################"$DATE"###################" >> /data/logs/daily.2.log
+#使用 回归的方法预测。
+/usr/local/bin/python3 /data/stock/job/calculate_period_return_index.py >> /data/logs/daily.2.log
 
 echo "###################"$DATE"###################" >> /data/logs/daily.3.log
-#使用 回归的方法预测。
-/usr/local/bin/python3 /data/stock/job/calculate_period_return_index.py >> /data/logs/daily.3.log
+#使用股票指标预测。
+/usr/local/bin/python3 /data/stock/job/calculate_stock_statistics.py >> /data/logs/daily.3.log
 
 echo "###################"$DATE"###################" >> /data/logs/daily.4.log
-#使用股票指标预测。
-/usr/local/bin/python3 /data/stock/job/~.py >> /data/logs/daily.4.log
+#使用股票指标预测购买。
+/usr/local/bin/python3 /data/stock/job/calculate_stock_statistics_buy.py >> /data/logs/daily.4.log
 
 echo "###################"$DATE"###################" >> /data/logs/daily.5.log
-#使用股票指标预测购买。
-/usr/local/bin/python3 /data/stock/job/calculate_stock_statistics_buy.py >> /data/logs/daily.5.log
+#使用股票指标预测卖出。
+/usr/local/bin/python3 /data/stock/job/calculate_stock_statistics_sell.py >> /data/logs/daily.5.log
 
 echo "###################"$DATE"###################" >> /data/logs/daily.6.log
-#使用股票指标预测卖出。
-/usr/local/bin/python3 /data/stock/job/calculate_stock_statistics_sell.py >> /data/logs/daily.6.log
+#线性回归模型。
+/usr/local/bin/python3 /data/stock/job/calculate_stock_sklearn_index.py >> /data/logs/daily.6.log
 
 #清除前3天数据。
 DATE_20=`date -d '-20 days' +%Y-%m-%d`
