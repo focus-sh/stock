@@ -22,10 +22,10 @@ class DownloadTopList:
                 'args': [date.strftime("%Y-%m-%d")],
                 'kwargs': {'retry_count': 3}
             },
-            primary_keys=["date", "code"],
             appendix={
                 'date': date.strftime("%Y%m%d")
-            }
+            },
+            primary_keys=["date", "code"]
         )
 
 
@@ -34,10 +34,10 @@ class DownloadIndex:
     def run(date):
         tushare.download_data(
             svc_name='get_index',
-            primary_keys=["date", "code"],
             appendix={
                 'date': date.strftime("%Y%m%d")
-            }
+            },
+            primary_keys=["date", "code"]
         )
 
 
@@ -46,10 +46,10 @@ class DownloadTodayAll:
     def run(date):
         tushare.download_data(
             svc_name='get_today_all',
-            primary_keys=["date", "code"],
             appendix={
                 'date': date.strftime("%Y%m%d")
-            }
+            },
+            primary_keys=["date", "code"]
         )
 
 

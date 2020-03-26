@@ -2,16 +2,48 @@ import logging
 
 from lib.mysql import mysql
 import tushare as ts
+from lib.environment import environment as env
 
 
 class TuShare:
-    def download_data(self, svc_name, primary_keys, params=None, appendix={}, table_name=None):
+    def __init__(self):
+        self.token = env.get_env_with_def("TUSHARE_TOKEN", "133a09e917c71347aabc97a2b0fc3a4837a2487b643537c5d29f75a6")
+        logging.info(f'Initializing TuShare Pro Api with token: {self.token}')
+        ts.set_token(token=self.token)
+        self.pro = ts.pro_api(token=self.token)
+        logging.info(f'TuShare Pro Api Initialized.')
+
+    def download_data_pro(self, svc_name=None, params=None, appendix={}, table_name=None, primary_keys=[]):
+        logging.info(f'Downloading data from service(Pro)<{svc_name}> with keys<{primary_keys}>')
+        data = self.call_remote(api=self.pro, svc_name=svc_name, params=params)
+        self.save(
+            data=data,
+            appendix=appendix,
+            table_name=table_name or self.get_table_name('pro_', svc_name),
+            primary_keys=primary_keys
+        )
+        logging.info(f'Finish downloading data from service(Pro)[{svc_name}]')
+
+    def download_data(self, svc_name=None, params=None, appendix={}, table_name=None, primary_keys=[]):
         logging.info(f'Downloading data from service<{svc_name}> with keys<{primary_keys}>')
-        args = [] if params is None else params['args']
-        kwargs = {} if params is None else params['kwargs']
-        data = getattr(ts, svc_name)(*args, **kwargs)
+        data = self.call_remote(svc_name=svc_name, params=params)
+        self.save(
+            data=data,
+            appendix=appendix,
+            table_name=table_name or self.get_table_name(svc_name=svc_name),
+            primary_keys=primary_keys
+        )
+        logging.info(f'Finish downloading data from service[{svc_name}]')
+
+    @staticmethod
+    def call_remote(api=ts, svc_name=None, params={}):
+        args = (params or {}).get('args') or []
+        kwargs = (params or {}).get('kwargs') or {}
+        return getattr(api, svc_name)(*args, **kwargs)
+
+    def save(self, data=None, appendix={}, table_name=None, primary_keys=[]):
         if data is None or len(data) == 0:
-            logging.warning(f'No data found by calling service<{svc_name}>.')
+            logging.warning(f'No data found for table<{table_name}>.')
             return
 
         # Add constant columns if has any
@@ -22,12 +54,8 @@ class TuShare:
         if self.should_drop_duplicates(data.index.name, primary_keys):
             data = data.drop_duplicates(subset=primary_keys, keep="last")
 
-        if table_name is None:
-            table_name = tushare.get_table_name(svc_name)
-
         # 为了便于显示，浮点数均保留4位有效数字
         mysql.insert_db(data, table_name, primary_keys)
-        logging.info(f'Finish downloading data from service[{svc_name}]')
 
     @staticmethod
     def should_drop_duplicates(index_name, primary_keys):
@@ -40,12 +68,12 @@ class TuShare:
         return index_name not in primary_keys
 
     @staticmethod
-    def get_table_name(svc_name):
+    def get_table_name(prefix='ts_', svc_name=None):
         table_name = svc_name
         if table_name.startswith('get_'):
             table_name = table_name.replace('get_', '')
 
-        return 'ts_' + table_name
+        return prefix + table_name
 
 
 tushare = TuShare()

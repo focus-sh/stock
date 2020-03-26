@@ -75,7 +75,7 @@ class MySql:
         data = data.round(4)  # 入库数据中浮点数，统一保留4位小数
         engine_mysql = self.engine_to_db(to_db)
         data.to_sql(name=table_name, con=engine_mysql, if_exists='append', index=(data.index.name is not None))
-        if not inspect(engine_mysql).get_primary_keys(table_name):
+        if not inspect(engine_mysql).get_pk_constraint(table_name):
             with engine_mysql.connect() as con:
                 try:
                     con.execute(
