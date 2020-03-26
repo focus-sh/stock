@@ -75,7 +75,7 @@ def stat_all_batch(tmp_datetime):
         # 合并数据
         data_new = pd.merge(data, stock_sklearn_apply, on=['code'], how='left')
         # for index, row in data.iterrows():
-        #     next_stock, score = stat_index_all(row, i)
+        #     next_stock, score = run(row, i)
         #     print(next_stock, score)
         data_new["next_close"] = data_new["next_close"].round(2)  # 数据保留4位小数
         data_new["sklearn_score"] = data_new["sklearn_score"].round(2)  # 数据保留2位小数
@@ -98,7 +98,7 @@ def stat_all_batch(tmp_datetime):
 # code date next_close sklearn_score
 def apply_sklearn(data):
     # 要操作的数据库表名称。
-    print("########stat_index_all########:", len(data))
+    print("########run########:", len(data))
     date = data["date"]
     code = data["code"]
     print(date, code)

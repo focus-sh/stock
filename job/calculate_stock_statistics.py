@@ -43,7 +43,7 @@ class StockStatisticsFilter:
     @staticmethod
     def filter(date):
         stock_statistics.delete(date)
-        data = ss_stock_statistics.paged_select(
+        data = ss_stock_statistics.select(
             date=date,
             min_kdjk=80,
             min_kdjd=70,

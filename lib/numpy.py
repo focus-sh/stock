@@ -4,6 +4,11 @@ import numpy as np
 
 
 class Numpy:
+    def get_last_valid_val(self, lst):
+        if len(lst) == 0:
+            return 0
+
+        return self.get_valid_ele(lst, len(lst) - 1)
 
     def get_valid_nlargest_mean(self, n, lst):
         nlargest = heapq.nlargest(n, lst)
@@ -26,5 +31,6 @@ class Numpy:
         if val is None or np.isinf(val) or np.isnan(val):
             return 0
         return val
+
 
 numpy = Numpy()

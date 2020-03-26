@@ -5,11 +5,9 @@
 import pandas as pd
 
 from lib.executor import executor
-from lib.numpy import numpy
-from lib.pandas import pandas
 from lib.stockstats import stockstats
-from model.stock_statistics_buy import stock_statistics_buy
 from model.stock_statistics import stock_statistics
+from model.stock_statistics_buy import stock_statistics_buy
 
 
 class CalculateStockStatisticsBuy:
@@ -17,7 +15,7 @@ class CalculateStockStatisticsBuy:
     def run(self, date):
         data = stock_statistics.select(
             date=date,
-            min_change_percent=0,
+            min_change_percent=2,
             min_pb=0
         )
 

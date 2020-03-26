@@ -95,4 +95,5 @@ class StockStats:
     def calculate_up_rate(wave_mean, trade, wave_crest):
         return wave_mean.sub(trade).div(wave_crest).mul(100)
 
+
 stockstats = StockStats()

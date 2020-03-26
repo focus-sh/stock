@@ -11,7 +11,7 @@ class TestCalculatePeriodWaveIndex(unittest.TestCase):
     @patch('model.period_wave_index.period_wave_index.delete')
     @patch('model.ts_today_all.ts_today_all.select')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
-    def test_stat_index_all(self, ts_today_all_select, ts_today_all_delete, ts_today_all_insert):
+    def test_run(self, ts_today_all_select, ts_wave_index_delete, ts_wave_index_insert):
         ts_today_all_select.return_value = pd.DataFrame({
             'date': {0: '20200325', 1: '20200325'},
             'code': {0: '000001', 1: '000005'},
@@ -56,8 +56,8 @@ class TestCalculatePeriodWaveIndex(unittest.TestCase):
 
         calculate_period_wave_index.run(datetime.date(2020, 3, 25))
 
-        self.assertTrue(ts_today_all_delete.called)
-        self.assertTrue(ts_today_all_insert.called)
+        self.assertTrue(ts_wave_index_delete.called)
+        self.assertTrue(ts_wave_index_insert.called)
 
-        [statistics], _ = ts_today_all_insert.call_args
+        [statistics], _ = ts_wave_index_insert.call_args
         self.assertDictEqual(statistics.to_dict(), index)

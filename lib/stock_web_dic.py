@@ -229,8 +229,8 @@ STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
         type="每日数据猜想",
-        name="每日收益率猜想",
-        table_name="guess_return_daily",
+        name="回归模型预测",
+        table_name="period_return_index",
         columns=["date", "code", "name",
                  "5d", "10d", "20d", "60d", "5-10d", "5-20d", "mov_vol", "return",
                  "changepercent", "trade", "open", "high", "low", "settlement", "volume",
