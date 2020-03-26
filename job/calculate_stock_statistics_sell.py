@@ -40,7 +40,7 @@ class CalculateStockStatisticsSell:
             axis=1
         )
         statistics.drop('date', axis=1, inplace=True)
-        statistics = pd.merge(data[["code", "date", "trade"]], statistics, on=['code'], how='left')
+        statistics = pd.merge(data, statistics, on=['code'], how='left')
         statistics["income"] = (statistics["today_trade"] - statistics["trade"]) * 100
 
         stock_statistics_sell.delete(date)

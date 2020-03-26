@@ -3,7 +3,7 @@ import unittest
 from lib.tushare import tushare
 
 
-class TestTushare(unittest.TestCase):
+class TestTuShare(unittest.TestCase):
     def test_should_drop_duplicates(self):
         self.assertTrue(tushare.should_drop_duplicates(None, None))
         self.assertTrue(tushare.should_drop_duplicates(None, []))
