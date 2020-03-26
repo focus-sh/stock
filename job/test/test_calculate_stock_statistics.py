@@ -4,16 +4,10 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from job.calculate_stock_statistics import stock_stats_index_calculator as calculator, stock_stats_index_calculator, \
-    stock_statistics_filter
-from model.ss_stock_statistics import ss_stock_statistics
+from job.calculate_stock_statistics import stock_stats_index_calculator as calculator
 
 
 class TestCalculateStockStatistics(unittest.TestCase):
-    @unittest.skip
-    def test_calculate_stock_statistics(self):
-        stock_stats_index_calculator.run(datetime.date(2019, 2, 11))
-        stock_statistics_filter.filter(datetime.date(2019, 2, 11))
 
     @patch('lib.mysql.mysql.insert_db')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
@@ -22,12 +16,14 @@ class TestCalculateStockStatistics(unittest.TestCase):
     @patch('lib.mysql.mysql.count_by_date')
     @patch('lib.mysql.mysql.del_by_date')
     @patch('lib.mysql.mysql.count_with_where_clause')
-    def test_run(self,
-                            count_with_where_clause,
-                            del_by_date,
-                            count_by_date,
-                            create_data_frame_by_sql,
-                            insert_db):
+    def test_run(
+            self,
+            count_with_where_clause,
+            del_by_date,
+            count_by_date,
+            create_data_frame_by_sql,
+            insert_db
+    ):
         data = {
             'trade': ['13.42'],
             'code': ['000001'],

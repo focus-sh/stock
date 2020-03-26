@@ -326,9 +326,9 @@ STOCK_WEB_DATA_LIST.append(
 STOCK_WEB_DATA_LIST.append(
     StockWebData(
         mode="query",
-        type="每日数据Keras猜想",
-        name="每日股票数据Keras猜想",
-        table_name="guess_sklearn_ma_daily",
+        type="每日数据猜想",
+        name="线性回归模型预测",
+        table_name="stock_sklearn_index",
         columns=["date", "code", "name", "changepercent", "trade", "open", "high", "low", "settlement", "volume",
                  "turnoverratio", "next_close", "sklearn_score", "up_rate"],
         column_names=["日期", "代码", "名称", "涨跌幅", "现价", "开盘价", "最高价", "最低价", "昨日收盘价", "成交量",
@@ -346,7 +346,7 @@ for tmp in STOCK_WEB_DATA_LIST:
         # 增加columns 字段中的【东方财富】
         tmp_idx = tmp.columns.index("code")
         tmp.column_names.insert(tmp_idx + 1, "东方财富")
-    except  Exception as e:
+    except Exception as e:
         print("error :", e)
 
     STOCK_WEB_DATA_MAP[tmp.table_name] = tmp
