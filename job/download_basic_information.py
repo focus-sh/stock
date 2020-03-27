@@ -148,6 +148,7 @@ download_gdp_contrib = DownloadGdpContrib()
 download_cpi = DownloadCpi()
 download_ppi = DownloadPpi()
 download_stock_basics = DownloadStockBasics()
+download_stock_basic_pro = DownloadStockBasicPro()
 
 if __name__ == '__main__':
     mysql.create_new_schema_if_necessary()
@@ -164,3 +165,5 @@ if __name__ == '__main__':
     executor.run_with_args(download_cpi.run)
     executor.run_with_args(download_ppi.run)
     executor.run_with_args(download_stock_basics.run)
+
+    executor.run_with_args(download_stock_basic_pro.run)
