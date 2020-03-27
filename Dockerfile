@@ -100,6 +100,7 @@ ADD job /data/stock/job
 ADD lib /data/stock/lib
 ADD web /data/stock/web
 ADD model /data/stock/model
+ADD svc /data/stock/svc
 ADD supervisor /etc/supervisor
 
 ADD job/cron.minutely /etc/cron.minutely
