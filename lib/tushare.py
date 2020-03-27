@@ -25,7 +25,7 @@ class TuShare:
         logging.info(f'Finish downloading data from service(Pro)[{svc_name}]')
 
     def download_data(self, svc_name=None, params=None, appendix={}, table_name=None, primary_keys=[]):
-        logging.info(f'Downloading data from service<{svc_name}> with keys<{primary_keys}>')
+        logging.info(f'Downloading data from service<{svc_name}> with params<{params}> and keys<{primary_keys}>')
         data = self.call_remote(svc_name=svc_name, params=params)
         self.save(
             data=data,

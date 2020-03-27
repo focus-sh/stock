@@ -7,7 +7,7 @@ class TsTodayAll:
     def __init__(self):
         self.table_name = 'ts_today_all'
 
-        self.select_sql = """
+        self.select_sql = f"""
 SELECT 
     `date`,
     `code`,
@@ -26,7 +26,7 @@ SELECT
     `mktcap`,
     `nmc`
 FROM
-    stock_data.ts_today_all"""
+    stock_data.{self.table_name}"""
 
         self.where_clause = """
 WHERE

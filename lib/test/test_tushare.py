@@ -32,9 +32,9 @@ class TestTuShare(unittest.TestCase):
             svc_name='pro_bar',
             params={
                 'kwargs': {
-                    'ts_code': '000001.SZ',
+                    'ts_code': '000976.SZ',
                     'adj': 'qfq',
-                    'start_date': '19910403'
+                    'start_date': '20000601'
                 }
             },
         )

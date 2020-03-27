@@ -8,7 +8,7 @@ from lib.tushare import tushare
 
 class DownloadDepositRate:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_deposit_rate', 
             primary_keys=["date", "deposit_type"]
@@ -17,7 +17,7 @@ class DownloadDepositRate:
 
 class DownloadLoanRate:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_loan_rate', 
             primary_keys=["date", "loan_type"]
@@ -26,7 +26,7 @@ class DownloadLoanRate:
 
 class DownloadRrr:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_rrr', 
             primary_keys="date"
@@ -35,7 +35,7 @@ class DownloadRrr:
 
 class DownloadMoneySupply:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_money_supply', 
             primary_keys="month"
@@ -44,7 +44,7 @@ class DownloadMoneySupply:
 
 class DownloadMoneySupplyBal:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_money_supply_bal', 
             primary_keys="year"
@@ -53,7 +53,7 @@ class DownloadMoneySupplyBal:
 
 class DownloadGdpYear:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_gdp_year', 
             primary_keys="year"
@@ -62,7 +62,7 @@ class DownloadGdpYear:
         
 class DownloadGdpQuarter:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_gdp_quarter', 
             primary_keys="quarter"
@@ -71,7 +71,7 @@ class DownloadGdpQuarter:
         
 class DownloadGdpFor:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_gdp_for', 
             primary_keys="year"
@@ -80,7 +80,7 @@ class DownloadGdpFor:
         
 class DownloadGdpPull:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_gdp_pull', 
             primary_keys="year"
@@ -89,7 +89,7 @@ class DownloadGdpPull:
 
 class DownloadGdpContrib:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_gdp_contrib', 
             primary_keys="year"
@@ -98,7 +98,7 @@ class DownloadGdpContrib:
         
 class DownloadCpi:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_cpi', 
             primary_keys="month"
@@ -107,7 +107,7 @@ class DownloadCpi:
         
 class DownloadPpi:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_ppi', 
             primary_keys="month"
@@ -116,7 +116,7 @@ class DownloadPpi:
 
 class DownloadStockBasics:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data(
             svc_name='get_stock_basics', 
             primary_keys="code"
@@ -125,7 +125,7 @@ class DownloadStockBasics:
 
 class DownloadStockBasicPro:
     @staticmethod
-    def run():
+    def run(date):
         tushare.download_data_pro(
             svc_name='stock_basic',
             params={
@@ -135,20 +135,32 @@ class DownloadStockBasicPro:
         )
 
 
+download_deposit_rate = DownloadDepositRate()
+download_loan_rate = DownloadLoanRate()
+download_rrr = DownloadRrr()
+download_money_supply = DownloadMoneySupply()
+download_money_supply_bal = DownloadMoneySupplyBal()
+download_gdp_year = DownloadGdpYear()
+download_gdp_quarter = DownloadGdpQuarter()
+download_gdp_for = DownloadGdpFor()
+download_gdp_pull = DownloadGdpPull()
+download_gdp_contrib = DownloadGdpContrib()
+download_cpi = DownloadCpi()
+download_ppi = DownloadPpi()
+download_stock_basics = DownloadStockBasics()
+
 if __name__ == '__main__':
     mysql.create_new_schema_if_necessary()
-    DownloadDepositRate().run()
-    DownloadLoanRate().run()
-    DownloadRrr().run()
-    DownloadMoneySupply().run()
-    DownloadMoneySupplyBal().run()
-    DownloadGdpYear().run()
-    DownloadGdpQuarter().run()
-    DownloadGdpFor().run()
-    DownloadGdpPull().run()
-    DownloadGdpContrib().run()
-    DownloadCpi().run()
-    DownloadPpi().run()
-    DownloadStockBasics().run()
-
-    DownloadStockBasicPro().run()
+    executor.run_with_args(download_deposit_rate.run)
+    executor.run_with_args(download_loan_rate.run)
+    executor.run_with_args(download_rrr.run)
+    executor.run_with_args(download_money_supply.run)
+    executor.run_with_args(download_money_supply_bal.run)
+    executor.run_with_args(download_gdp_year.run)
+    executor.run_with_args(download_gdp_quarter.run)
+    executor.run_with_args(download_gdp_for.run)
+    executor.run_with_args(download_gdp_pull.run)
+    executor.run_with_args(download_gdp_contrib.run)
+    executor.run_with_args(download_cpi.run)
+    executor.run_with_args(download_ppi.run)
+    executor.run_with_args(download_stock_basics.run)

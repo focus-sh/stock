@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import time
 
+from job.download_pro_bar import download_pro_bar
 from lib.executor import executor
 from lib.pandas import pandas
 from lib.tushare import tushare
@@ -58,9 +59,11 @@ download_top_list = DownloadTopList()
 download_index = DownloadIndex()
 download_today_all = DownloadTodayAll()
 
+
 if __name__ == '__main__':
     executor.run_with_args(del_his_cache_data.run)
     executor.run_with_args(download_top_list.run)
     executor.run_with_args(download_index.run)
     time.sleep(5)  # 停止5秒
     executor.run_with_args(download_today_all.run)
+
