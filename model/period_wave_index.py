@@ -7,7 +7,7 @@ class PeriodWaveIndex:
         self.table_name = 'period_wave_index'
 
     def insert(self, data):
-        mysql.insert_db(
+        mysql.insert(
             data=data,
             table_name=self.table_name,
             primary_keys=["date", "code"]

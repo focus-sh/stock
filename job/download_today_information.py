@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import time
 
-from job.download_pro_bar import download_pro_bar
 from lib.executor import executor
 from lib.pandas import pandas
 from lib.tushare import tushare

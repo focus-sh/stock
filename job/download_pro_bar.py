@@ -6,22 +6,16 @@ from lib.executor import executor
 from lib.tushare import tushare
 from model.pro_stock_basic import pro_stock_basic
 from model.ts_pro_bar import ts_pro_bar
+from svc.pro_stock_basic_iterator import ProStockBasicIterator
 
 
-class DownloadProBar:
+class DownloadProBar(ProStockBasicIterator):
 
     def __init__(self):
         self.batch_size = 100
 
-    def run(self, date):
-        logging.info(f'Downloading stock history data using pro_bar svc')
-        count = pro_stock_basic.count()
-        end = int(math.ceil(float(count) / self.batch_size) * self.batch_size)
-        for i in range(0, end, self.batch_size):
-            data = pro_stock_basic.paged_select(i, self.batch_size)
-            for _, row in data.iterrows():
-                self.download(ts_code=row['ts_code'], list_date=row['list_date'], today=date)
-        logging.info(f'Finish downloading stock history data using pro_bar svc')
+    def do_service(self, date, row):
+        self.download(ts_code=row['ts_code'], list_date=row['list_date'], today=date)
 
     def download(self, ts_code, list_date, today):
         stock = ts_pro_bar.select_latest_record(ts_code)

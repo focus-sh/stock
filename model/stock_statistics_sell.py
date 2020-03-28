@@ -7,7 +7,7 @@ class StockStatisticsSell:
         self.table_name = 'stock_statistics_sell'
 
     def insert(self, data):
-        mysql.insert_db(
+        mysql.insert(
             data=data,
             table_name=self.table_name,
             primary_keys=["date", "code"]

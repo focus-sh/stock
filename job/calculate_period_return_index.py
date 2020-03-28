@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-import datetime
 import math
 
 import numpy as np
@@ -13,14 +12,6 @@ from lib.numpy import numpy
 from lib.pandas import pandas
 from model.period_return_index import period_return_index
 from model.ts_today_all import ts_today_all
-
-"""
-SELECT `date`, `code`, `name`, `changepercent`, `trade`, `open`, `high`, `low`, 
-                `settlement`, `volume`, `turnoverratio`, `amount`, `per`, `pb`, `mktcap`, `nmc` 
-    FROM stock_data.ts_today_all where `date` = 20171106 and trade > 0 and trade <= 20
-and `code` not like '002%' and `code` not like '300%'  and `name` not like '%st%'
-
-"""
 
 
 class CalculatePeriodReturnIndex:

@@ -7,7 +7,7 @@ class PeriodReturnIndex:
         self.table_name = 'period_return_index'
 
     def insert(self, data):
-        mysql.insert_db(
+        mysql.insert(
             data=data,
             table_name=self.table_name,
             primary_keys=["date", "code"]

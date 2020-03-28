@@ -9,7 +9,7 @@ from job.calculate_stock_statistics import stock_stats_index_calculator as calcu
 
 class TestCalculateStockStatistics(unittest.TestCase):
 
-    @patch('lib.mysql.mysql.insert_db')
+    @patch('model.ss_stock_statistics.ss_stock_statistics.insert')
     @patch('lib.pandas.pandas.bash_stock_tmp', __file__.replace('.py', '/%s/%s/'))
     @patch('lib.pandas.pandas.create_data_frame_by_sql')
     @patch('job.calculate_stock_statistics.stock_stats_index_calculator.batch_size', 1)
@@ -22,7 +22,7 @@ class TestCalculateStockStatistics(unittest.TestCase):
             del_by_date,
             count_by_date,
             create_data_frame_by_sql,
-            insert_db
+            ss_stock_statistics_insert
     ):
         data = {
             'trade': ['13.42'],
@@ -34,8 +34,8 @@ class TestCalculateStockStatistics(unittest.TestCase):
         count_with_where_clause.return_value = 1
         count_by_date.return_value = 1
         calculator.run(datetime.date(2020, 3, 20))
-        self.assertEqual(insert_db.called, True)
-        (), kwargs = insert_db.call_args
+        self.assertEqual(ss_stock_statistics_insert.called, True)
+        (), kwargs = ss_stock_statistics_insert.call_args
         index = {'trade': '13.42', 'code': '000001', 'date': '20200320', 'adx': 59.87459509612469,
                  'adxr': 43.47846122619745, 'boll': 14.360499999999998, 'boll_lb': 12.499199096698312,
                  'boll_ub': 16.221800903301684, 'cci': -141.23742761353265, 'cci_20': -187.9178014360005,

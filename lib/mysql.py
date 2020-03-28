@@ -1,10 +1,11 @@
 import logging
 from functools import reduce
 
-import MySQLdb
 from sqlalchemy import create_engine, inspect
+from sqlalchemy.exc import OperationalError, ProgrammingError
+
 from lib.environment import environment as env
-from MySQLdb import ProgrammingError
+
 
 class MySql:
 
@@ -13,142 +14,84 @@ class MySql:
         self.user = env.get_env_with_def('MYSQL_USER', 'root')
         self.password = env.get_env_with_def('MYSQL_PWD', 'mariadb')
         self.schema = env.get_env_with_def('MYSQL_DB', 'stock_data')
+        self.url = f"mysql+mysqldb://{self.user}:{self.password}@{self.host}/{self.schema}?charset=utf8"
+        self.create_schema()
 
-    def create_new_schema_if_necessary(self):
-        [connection, cursor] = [None, None]
+        self.add_primary_key_sql = 'ALTER TABLE `%s` ADD PRIMARY KEY (%s);'
+        self.del_sql = "DELETE FROM `stock_data`.`%s`"
+        self.count_sql = "SELECT COUNT(1) FROM `stock_data`.`%s`"
+
+    def create_schema(self):
+        logging.info(f'Create schema {self.schema} is necessary.')
+        url = f"mysql+mysqldb://{self.user}:{self.password}@{self.host}"
+        engine = self.engine(url)
+        sql = f'CREATE DATABASE IF NOT EXISTS {self.schema} CHARACTER SET utf8 COLLATE utf8_general_ci'
         try:
-            connection = MySQLdb.connect(
-                mysql.host,
-                mysql.user,
-                mysql.password,
-                mysql.schema,
-                charset="utf8"
-            )
+            with engine.connect() as conn:
+                conn.execute(sql)
+        except OperationalError:
+            logging.exception(f'Create schema {self.schema} failed. Maybe the database service is not ready.')
 
-            cursor = connection.cursor()
-            cursor.execute(" paged_select 1 ")
-        except Exception:
-            logging.info(f"The schema[{mysql.schema}] doesnt exist, create a new one.")
-            self.create_new_schema(self.schema)
-        finally:
-            if cursor is not None:
-                cursor.close()
-            if connection is not None:
-                connection.close()
+    def engine(self, url=None):
+        return create_engine(url or self.url, encoding='utf8', convert_unicode=True)
 
-    def create_new_schema(self, schema):
-        [connection, cursor] = [None, None]
-        try:
-            connection = MySQLdb.connect(self.host, self.user, self.password, charset="utf8")
-            cursor = connection.cursor()
-            create_sql = " CREATE DATABASE IF NOT EXISTS %s CHARACTER SET utf8 COLLATE utf8_general_ci " % schema
-            cursor.execute(create_sql)
-        except Exception:
-            logging.exception(f'Create schema[{schema}] failed.')
-        finally:
-            if cursor is not None:
-                cursor.close()
-            if connection is not None:
-                connection.close()
-
-    def connection(self):
-        db = MySQLdb.connect(self.host, self.user, self.password, self.schema, charset="utf8")
-        db.autocommit(on=True)
-        return db
-
-    def insert(self, sql, params=()):
-        connection = self.connection()
-        cursor = connection.cursor()
-        logging.info(f'Executing insert statement [{sql}] with params [{params}]')
-        try:
-            cursor.execute(sql, params)
-        except Exception:
-            logging.exception(f'Executing insert statement [{sql}] with params [{params}] failed')
-        finally:
-            cursor.close()
-            connection.close()
-
-    def insert_db(self, data, table_name, primary_keys):
-        self.insert_other_db(self.schema, data, table_name, primary_keys)
-
-    def insert_other_db(self, to_db, data, table_name, primary_keys):
-        data = data.round(4)  # 入库数据中浮点数，统一保留4位小数
-        engine_mysql = self.engine_to_db(to_db)
-        data.to_sql(name=table_name, con=engine_mysql, if_exists='append', index=(data.index.name is not None))
-        if not inspect(engine_mysql).get_pk_constraint(table_name)['constrained_columns']:
-            with engine_mysql.connect() as con:
-                try:
-                    con.execute(
-                        'ALTER TABLE `%s` ADD PRIMARY KEY (%s);' % (table_name, self.concat_list_params(primary_keys)))
-                except Exception as e:
-                    logging.exception('Insert data into database error.')
-
-    def engine(self):
-        return self.engine_to_db(self.schema)
-
-    def engine_to_db(self, to_db):
-        mysql_url = "mysql+mysqldb://" + self.user + ":" + self.password + "@" + self.host + "/" + to_db + "?charset=utf8"
-        return create_engine(
-            mysql_url,
-            encoding='utf8',
-            convert_unicode=True
-        )
-
-    def count_by_date(self, table_name, date):
-        return self.count_with_where_clause(table_name, "where `date`= %s ", [date])
-
-    def count_with_where_clause(self, table_name, clause, params=[]):
-        sql = self.count_sql(table_name, clause)
-        connection = self.connection()
-        cursor = connection.cursor()
-        logging.info(f'Select count with sql<{sql}> and params<{params}>')
-        try:
-            cursor.execute(sql, params)
-            result = cursor.fetchall()
-            if len(result) == 1:
-                return int(result[0][0])
-            else:
-                return 0
-        except MySQLdb.ProgrammingError:
-            logging.exception('Execute paged_select count statement error')
-            return 0
-        finally:
-            cursor.close()
-            connection.close()
-
-    def select(self, sql, params=()):
-        with self.connection() as db:
-            logging.info(f'Select data by sql<{sql}> and params<{params}>')
-            try:
-                db.execute(sql, params)
-            except Exception:
-                logging.exception(f'Select data by sql[{sql}] and params[{params}] failed')
-            result = db.fetchall()
-            return result
-
-    def del_by_date(self, table_name, date):
-        try:
-            del_sql = " DELETE FROM `stock_data`.`" + table_name + "` WHERE `date`= %s " % date.strftime("%Y%m%d")
-            self.insert(del_sql)
-        except ProgrammingError:
-            logging.exception(f'Delete table{table_name} by date{date} failed')
+    def insert(self, data, table_name, primary_keys, indexes=[]):
+        #  数据去重
+        if self.should_drop_duplicates(data.index.name, primary_keys):
+            data = data.drop_duplicates(subset=primary_keys, keep="last")
+        data = data.round(4)  # 数据精度修剪
+        # 保存数据
+        data.to_sql(name=table_name, con=self.engine(), if_exists='append', index=(data.index.name is not None))
+        # 调整主键（若需要）
+        self.add_primary_key(table_name, primary_keys)
 
     @staticmethod
-    def count_sql(table_name, where_clause):
-            return f"""
-    SELECT 
-        COUNT(1)
-    FROM
-        `stock_data`.{table_name}
-    {where_clause}"""
+    def should_drop_duplicates(index_name, primary_keys):
+        if index_name is None:
+            return True
 
-    @staticmethod
-    def concat_list_params(lst):
+        if isinstance(primary_keys, str):
+            return primary_keys != index_name
+
+        return index_name not in primary_keys
+
+    def add_primary_key(self, table_name, primary_keys):
+        engine = self.engine()
+        if inspect(engine).get_pk_constraint(table_name)['constrained_columns']:
+            return  # 已经包含主键，不再处理
+
+        # 增加主键
+        with engine.connect() as con:
+            con.execute(self.add_primary_key_sql % (table_name, self.concat_list_params(primary_keys)))
+
+    def concat_list_params(self, lst):
         if isinstance(lst, str):
             return f'`{lst}`'
 
         return reduce(lambda x, y: f'{x}, `{y}`', lst, '')[2:]
 
+    def del_by_date(self, table_name, date):
+        where_clause = " WHERE `date`= %s "
+        self.del_with_where_clause(table_name, where_clause, [date.strftime("%Y%m%d")])
+
+    def del_with_where_clause(self, table_name, clause, params=[]):
+        sql = (self.del_sql % table_name) + clause
+        self.execute_with_where_clause(sql, params)
+
+    def count_by_date(self, table_name, date):
+        return self.count_with_where_clause(table_name, " WHERE `date`= %s ", [date.strftime("%Y%m%d")])
+
+    def count_with_where_clause(self, table_name, clause, params=[]):
+        sql = (self.count_sql % table_name) + clause
+        result = self.execute_with_where_clause(sql, params)
+        return result.fetchone()[0]
+
+    def execute_with_where_clause(self, sql, params=[]):
+        with self.engine().connect() as con:
+            try:
+                return con.execute(sql, params)
+            except ProgrammingError:
+                logging.exception(f'Failed to execute sql<{sql}> with params<{params}>')
 
 
 mysql = MySql()

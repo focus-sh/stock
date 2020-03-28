@@ -31,7 +31,7 @@ WHERE
     `buy_date` <= %s"""
 
     def insert(self, data):
-        mysql.insert_db(
+        mysql.insert(
             data=data,
             table_name=self.table_name,
             primary_keys=["buy_date", "code"]

@@ -50,22 +50,7 @@ class TuShare:
         for key in appendix:
             data[key] = appendix[key]
 
-        # remove duplicated items when drop_duplicates is True
-        if self.should_drop_duplicates(data.index.name, primary_keys):
-            data = data.drop_duplicates(subset=primary_keys, keep="last")
-
-        # 为了便于显示，浮点数均保留4位有效数字
-        mysql.insert_db(data, table_name, primary_keys)
-
-    @staticmethod
-    def should_drop_duplicates(index_name, primary_keys):
-        if index_name is None:
-            return True
-
-        if isinstance(primary_keys, str):
-            return primary_keys != index_name
-
-        return index_name not in primary_keys
+        mysql.insert(data, table_name, primary_keys)
 
     @staticmethod
     def get_table_name(prefix='ts_', svc_name=None):

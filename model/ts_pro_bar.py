@@ -1,5 +1,6 @@
 import logging
 
+from lib.mysql import mysql
 from lib.pandas import pandas
 
 
@@ -35,6 +36,13 @@ WHERE
     ts_code = %s
         AND open IS NOT NULL
 ORDER BY trade_date'''
+
+    def insert(self, data):
+        mysql.insert(
+            data=data,
+            table_name=self.table_name,
+            primary_keys=["ts_code", "trade_date"]
+        )
 
     def select_latest_record(self, ts_code):
         try:

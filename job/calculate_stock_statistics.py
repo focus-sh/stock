@@ -23,7 +23,7 @@ class StockStatsIndexCalculator:
         for i in range(0, end, self.batch_size):
             data = ts_today_all.paged_select(date, i, self.batch_size)
             data = self.append_stock_stats(data)
-            ss_stock_statistics.insert(data)
+            ss_stock_statistics.insert(data=data)
 
     @staticmethod
     def append_stock_stats(data):

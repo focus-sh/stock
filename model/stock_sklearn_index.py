@@ -7,7 +7,7 @@ class StockSklearnIndex:
         self.table_name = 'stock_sklearn_index'
 
     def insert(self, data):
-        mysql.insert_db(
+        mysql.insert(
             data=data,
             table_name=self.table_name,
             primary_keys=["date", "code"]

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from lib.executor import executor
-from lib.mysql import mysql
 from lib.tushare import tushare
 
 
@@ -151,7 +150,6 @@ download_stock_basics = DownloadStockBasics()
 download_stock_basic_pro = DownloadStockBasicPro()
 
 if __name__ == '__main__':
-    mysql.create_new_schema_if_necessary()
     executor.run_with_args(download_deposit_rate.run)
     executor.run_with_args(download_loan_rate.run)
     executor.run_with_args(download_rrr.run)
