@@ -24,14 +24,15 @@ class TuShare:
         )
         logging.info(f'Finish downloading data from service(Pro)[{svc_name}]')
 
-    def download_data(self, svc_name=None, params=None, appendix={}, table_name=None, primary_keys=[]):
+    def download_data(self, svc_name=None, params=None, appendix={}, table_name=None, primary_keys=[], indexes=[]):
         logging.info(f'Downloading data from service<{svc_name}> with params<{params}> and keys<{primary_keys}>')
         data = self.call_remote(svc_name=svc_name, params=params)
         self.save(
             data=data,
             appendix=appendix,
             table_name=table_name or self.get_table_name(svc_name=svc_name),
-            primary_keys=primary_keys
+            primary_keys=primary_keys,
+            indexes=indexes
         )
         logging.info(f'Finish downloading data from service[{svc_name}]')
 
@@ -41,7 +42,7 @@ class TuShare:
         kwargs = (params or {}).get('kwargs') or {}
         return getattr(api, svc_name)(*args, **kwargs)
 
-    def save(self, data=None, appendix={}, table_name=None, primary_keys=[]):
+    def save(self, data=None, appendix={}, table_name=None, primary_keys=[], indexes=[]):
         if data is None or len(data) == 0:
             logging.warning(f'No data found for table<{table_name}>.')
             return
@@ -50,7 +51,7 @@ class TuShare:
         for key in appendix:
             data[key] = appendix[key]
 
-        mysql.insert(data, table_name, primary_keys)
+        mysql.insert(data, table_name, primary_keys, indexes)
 
     @staticmethod
     def get_table_name(prefix='ts_', svc_name=None):

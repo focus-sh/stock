@@ -41,7 +41,8 @@ ORDER BY trade_date'''
         mysql.insert(
             data=data,
             table_name=self.table_name,
-            primary_keys=["ts_code", "trade_date"]
+            primary_keys=["ts_code", "trade_date"],
+            indexes=['trade_date']
         )
 
     def select_latest_record(self, ts_code):

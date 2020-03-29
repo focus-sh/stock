@@ -1,10 +1,6 @@
-import logging
-import math
-
 from lib.datetime import datetime
 from lib.executor import executor
 from lib.tushare import tushare
-from model.pro_stock_basic import pro_stock_basic
 from model.ts_pro_bar import ts_pro_bar
 from svc.pro_stock_basic_iterator import ProStockBasicIterator
 
@@ -34,7 +30,8 @@ class DownloadProBar(ProStockBasicIterator):
                     'start_date': start_date
                 }
             },
-            primary_keys=["ts_code", "trade_date"]
+            primary_keys=["ts_code", "trade_date"],
+            indexes=['trade_date']
         )
 
     @staticmethod

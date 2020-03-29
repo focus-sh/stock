@@ -1,10 +1,10 @@
 import logging
-from functools import reduce
 
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.exc import OperationalError, ProgrammingError
 
 from lib.environment import environment as env
+from lib.list import list_utils
 
 
 class MySql:
@@ -18,6 +18,7 @@ class MySql:
         self.create_schema()
 
         self.add_primary_key_sql = 'ALTER TABLE `%s` ADD PRIMARY KEY (%s);'
+        self.add_index_sql = 'ALTER TABLE `%s` ADD INDEX (%s);'
         self.del_sql = "DELETE FROM `stock_data`.`%s`"
         self.count_sql = "SELECT COUNT(1) FROM `stock_data`.`%s`"
 
@@ -44,6 +45,8 @@ class MySql:
         data.to_sql(name=table_name, con=self.engine(), if_exists='append', index=(data.index.name is not None))
         # 调整主键（若需要）
         self.add_primary_key(table_name, primary_keys)
+        # 增加索引（若需要）
+        self.add_indexes(table_name, indexes)
 
     @staticmethod
     def should_drop_duplicates(index_name, primary_keys):
@@ -62,13 +65,34 @@ class MySql:
 
         # 增加主键
         with engine.connect() as con:
-            con.execute(self.add_primary_key_sql % (table_name, self.concat_list_params(primary_keys)))
+            con.execute(self.add_primary_key_sql % (table_name, list_utils.concat_list(primary_keys)))
 
-    def concat_list_params(self, lst):
-        if isinstance(lst, str):
-            return f'`{lst}`'
+    def add_indexes(self, table_name, indexes):
+        if not indexes:
+            return
 
-        return reduce(lambda x, y: f'{x}, `{y}`', lst, '')[2:]
+        engine = self.engine()
+        exist_indexes = inspect(engine).get_indexes(table_name)
+        for index in indexes:
+            if not self.index_already_exist(index, exist_indexes):
+                self.add_index(engine, table_name, index)
+
+    @staticmethod
+    def index_already_exist(index, exist_indexes):
+        if not index:
+            return True
+        if not exist_indexes:
+            return False
+
+        for table_index in exist_indexes:
+            if table_index['column_names'] == list_utils.as_list(index):
+                return True
+
+        return False
+
+    def add_index(self, engine, table_name, index):
+        with engine.connect() as con:
+            con.execute(self.add_index_sql % (table_name, list_utils.concat_list(index)))
 
     def del_by_date(self, table_name, date):
         where_clause = " WHERE `date`= %s "

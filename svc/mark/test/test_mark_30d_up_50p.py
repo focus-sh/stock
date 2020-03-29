@@ -2,14 +2,8 @@ import unittest
 
 import pandas as pd
 
-from svc.mark.mark_30d_up_50p import mark_30d_up_50p
-
 
 class TestMark30dUp50p(unittest.TestCase):
-
-    def test_mark(self):
-        mark_30d_up_50p.mark(ts_code='000001.SZ')
-
     def test_rolling(self):
         data = pd.DataFrame({
             'close': [1, 2, 3, 4, 5]
