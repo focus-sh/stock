@@ -2,6 +2,7 @@ import datetime
 import unittest
 from unittest.mock import patch
 import pandas as pd
+import tensorflow
 
 from job.calculate_stock_statistics_buy import calculate_stock_statistics_buy
 

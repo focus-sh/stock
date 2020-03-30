@@ -134,6 +134,18 @@ class DownloadStockBasicPro:
         )
 
 
+class DownloadTradeCalPro:
+    @staticmethod
+    def run(date):
+        tushare.download_data_pro(
+            svc_name='trade_cal',
+            params={
+                'kwargs': {'exchange': ''}
+            },
+            primary_keys=['exchange', "cal_date"]
+        )
+
+
 download_deposit_rate = DownloadDepositRate()
 download_loan_rate = DownloadLoanRate()
 download_rrr = DownloadRrr()
@@ -148,6 +160,7 @@ download_cpi = DownloadCpi()
 download_ppi = DownloadPpi()
 download_stock_basics = DownloadStockBasics()
 download_stock_basic_pro = DownloadStockBasicPro()
+download_trade_cal_pro = DownloadTradeCalPro()
 
 if __name__ == '__main__':
     executor.run_with_args(download_deposit_rate.run)
@@ -165,3 +178,4 @@ if __name__ == '__main__':
     executor.run_with_args(download_stock_basics.run)
 
     executor.run_with_args(download_stock_basic_pro.run)
+    executor.run_with_args(download_trade_cal_pro.run)

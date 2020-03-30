@@ -5,6 +5,8 @@
     ```bash
       brew install mysql
       brew install ta-lib
+      pip install --upgrade pip -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+      pip install --upgrade setuptools -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
       pip install -r requirements.txt -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
     ```
 + 调整依赖包源码
