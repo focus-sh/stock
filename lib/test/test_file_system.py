@@ -46,13 +46,13 @@ class TestFileSystem(unittest.TestCase):
         )
         file_system.write(data, name='test.stock')
         self.assertTrue(get_file_name.called)
-        (_, kwargs), _ = get_file_name.call_args
+        _, kwargs = get_file_name.call_args
         self.assertEqual(kwargs['name'], 'test.stock')
 
         # Read the saved data
         result = file_system.read(name='test.stock')
         self.assertTrue(get_file_name.called)
-        (_, kwargs), _ = get_file_name.call_args
+        _, kwargs = get_file_name.call_args
         self.assertEqual(kwargs['name'], 'test.stock')
 
         # Compare if is equal
@@ -108,7 +108,7 @@ class TestFileSystem(unittest.TestCase):
         result = file_system.read(name='test.stock')
 
         self.assertTrue(get_file_name.called)
-        (_, kwargs), _ = get_file_name.call_args
+        _, kwargs = get_file_name.call_args
         self.assertEqual(kwargs['name'], 'test.stock')
 
         # Compare if is equal

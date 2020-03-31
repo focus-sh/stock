@@ -1,6 +1,6 @@
-import logging
 import os
 import shutil
+
 import pandas as pd
 from pandas import DataFrame
 
@@ -13,7 +13,7 @@ class FileSystem:
     """
     def __init__(self):
         #  默认的根目录是～/data/cache，base是用于测试FileSystem使用的基础目录
-        self.base_dir = env.home() + "/data/cache/base"
+        self.base_dir = env.home() + "/data/cache"
         self.init_root()
 
         #  默认的压缩方法
@@ -36,19 +36,19 @@ class FileSystem:
             os.makedirs(absolute_path, exist_ok=True)
 
     def write(self, data: DataFrame, *args, **kwargs) -> None:
-        file_name = self.get_file_name(args, kwargs)
+        file_name = self.get_file_name(*args, **kwargs)
         data.to_pickle(file_name, compression=self.compression)
 
     def delete(self, *args, **kwargs) -> None:
         """
         根据参数，删除对应的文件
         """
-        file_name = self.get_file_name(args, kwargs)
+        file_name = self.get_file_name(*args, **kwargs)
         if os.path.exists(file_name):
             os.remove(file_name)
 
     def read(self, *args, **kwargs) -> DataFrame:
-        file_name = self.get_file_name(args, kwargs)
+        file_name = self.get_file_name(*args, **kwargs)
         if os.path.exists(file_name):
             return pd.read_pickle(file_name, compression=self.compression)
         return None
