@@ -21,7 +21,6 @@ class Datetime:
 
         return self.date_to_str(max_date)
 
-
     @staticmethod
     def str_to_date(date_str: str):
         if not date_str:

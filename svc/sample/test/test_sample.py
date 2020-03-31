@@ -1,12 +1,19 @@
 import datetime
 import unittest
+import random
 
-import tensorflow
-
-from svc.sample.sample import Sample, uniform_distribution
+from lib.executor import executor
+from svc.sample.distribution import uniform_distribution
+from svc.sample.sample import Sample
 
 
 class TestSample(unittest.TestCase):
+    @unittest.skip
+    def test_sample_from_range(self):
+        data = random.sample(range(0, 100), 20)
+        self.assertIsNotNone(data)
+
+    @unittest.skip
     def test_do_service(self):
         sample = Sample(
             begin_date=datetime.date(2018, 3, 20),
