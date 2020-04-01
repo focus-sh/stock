@@ -40,30 +40,33 @@ class Executor:
 
     @staticmethod
     def run_with_args(run_fun):
+        """
+        run_fun函数需要支持接收kwargs入参
+        """
         logging.info(f'Starting running func[{run_fun}] at {datetime.datetime.now()}')
 
         if len(sys.argv) == 3:
             tmp_year, tmp_month, tmp_day = sys.argv[1].split("-")
             loop = int(sys.argv[2])
-            tmp_datetime = datetime.datetime(int(tmp_year), int(tmp_month), int(tmp_day))
+            date = datetime.datetime(int(tmp_year), int(tmp_month), int(tmp_day))
             for i in range(0, loop):
-                tmp_datetime_new = tmp_datetime + datetime.timedelta(days=i)
+                date = date + datetime.timedelta(days=i)
                 try:
-                    run_fun(tmp_datetime_new)
+                    run_fun(date=date)
                 except Exception as e:
                     print("error :", e)
                     traceback.print_exc()
         elif len(sys.argv) == 2:
             tmp_year, tmp_month, tmp_day = sys.argv[1].split("-")
-            tmp_datetime = datetime.datetime(int(tmp_year), int(tmp_month), int(tmp_day))
+            date = datetime.datetime(int(tmp_year), int(tmp_month), int(tmp_day))
             try:
-                run_fun(tmp_datetime)
+                run_fun(date=date)
             except Exception as e:
                 print("error :", e)
                 traceback.print_exc()
         else:
             try:
-                run_fun(datetime.datetime.now())  # 使用当前时间
+                run_fun(date=datetime.datetime.now())  # 使用当前时间
             except Exception as e:
                 print("error :", e)
                 traceback.print_exc()

@@ -62,7 +62,7 @@ html_content = """
          (downloads) a file.  Its purpose is really to map from a
          figure and file format to a url in the application. */
       function ondownload(figure, format) {
-        window.open('download.' + format, '_blank');
+        window.open('sync_ts_pro_bar.' + format, '_blank');
       };
 
       $(document).ready(
@@ -80,7 +80,7 @@ html_content = """
               %(fig_id)s,
               // A websocket object (or something that behaves like one)
               websocket,
-              // A function called when a file type is selected for download
+              // A function called when a file type is selected for sync_ts_pro_bar
               ondownload,
               // The HTML element in which to place the figure
               $('div#figure'));
@@ -228,7 +228,7 @@ class MyApplication(tornado.web.Application):
             ('/ws', self.WebSocket),
 
             # Handles the downloading (i.e., saving) of static images
-            (r'/download.([a-z0-9.]+)', self.Download),
+            (r'/sync_ts_pro_bar.([a-z0-9.]+)', self.Download),
         ], debug=True)
 
 

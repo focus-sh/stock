@@ -13,6 +13,7 @@ class Pandas:
 
     def __init__(self):
         self.bash_stock_tmp = env.home() + "/data/cache/hist_data_cache/%s/%s/"
+        self.engine = mysql.engine()
 
     def del_hist_data_cache(self, date):
         cache_dir = self.bash_stock_tmp % (date.strftime("%Y-%m-%d")[0:7], (date.strftime("%Y-%m-%d")))
@@ -47,10 +48,9 @@ class Pandas:
             stock.to_pickle(cache_file, compression="gzip")
             return stock
 
-    @staticmethod
-    def create_data_frame_by_sql(sql, params, subset, keep):
+    def create_data_frame_by_sql(self, sql, params, subset, keep):
         logging.info(f"Create DataFrame with sql<{sql}\r\n> and params<{params}>")
-        data = pd.read_sql(sql=sql, con=mysql.engine(), params=params)
+        data = pd.read_sql(sql=sql, con=self.engine, params=params)
         return data.drop_duplicates(subset, keep)
 
 

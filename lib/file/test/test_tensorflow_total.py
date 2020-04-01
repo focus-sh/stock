@@ -1,6 +1,6 @@
-import datetime
 import unittest
 from unittest.mock import patch
+
 import pandas as pd
 
 from lib.file.tensorflow_total import file_system
@@ -21,8 +21,8 @@ class TestTensorflowTotal(unittest.TestCase):
         )
 
         # FILE NAME:
-        # training.sample.gzip.pickle
-        # testing.sample.gzip.pickle
+        # training.train.gzip.pickle
+        # testing.train.gzip.pickle
         # |x1|x2|...|xn|y|
         file_name = 'training.stock.gzip.pickle'
         file_system.write(data, file_name=file_name)

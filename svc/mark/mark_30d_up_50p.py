@@ -1,18 +1,17 @@
-import logging
-import math
-
 from lib.executor import executor
+from lib.iterator import Iterator
 from model.pro_stock_basic import pro_stock_basic
 from model.stock_mark import stock_mark
 from model.ts_pro_bar import ts_pro_bar
-from svc.pro_stock_basic_iterator import ProStockBasicIterator
 
 
-class Mark30dUp50p(ProStockBasicIterator):
-    """对股票历史数据打标，如果从当天向后30天内，股票涨幅超过50%的，标记为1，否则为0
-    """
-    def do_service(self, date, row):
-        self.mark(row['ts_code'])
+class Mark30dUp50p:
+    def __init__(self):
+        self.iterator = Iterator(pro_stock_basic)
+
+    def run(self, **kwargs):
+        for row in self.iterator:
+            self.mark(row['ts_code'])
 
     def mark(self, ts_code):
         # 获取该股票历史股价记录数据（按时间顺序顺序排序，剔除Null值数据）

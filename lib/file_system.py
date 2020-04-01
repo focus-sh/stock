@@ -47,6 +47,10 @@ class FileSystem:
         if os.path.exists(file_name):
             os.remove(file_name)
 
+    def exist(self, *args, **kwargs):
+        file_name = self.get_file_name(*args, **kwargs)
+        return os.path.exists(file_name)
+
     def read(self, *args, **kwargs) -> DataFrame:
         file_name = self.get_file_name(*args, **kwargs)
         if os.path.exists(file_name):

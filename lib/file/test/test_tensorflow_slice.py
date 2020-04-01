@@ -23,8 +23,8 @@ class TestTensorflowSlice(unittest.TestCase):
         # daily_slice_training.stock.gzip.pickle
         # daily_slice_testing.stock.gzip.pickle
         # |ts_code|
-        # daily_slice_training.sample.gzip.pickle
-        # daily_slice_testing.sample.gzip.pickle
+        # daily_slice_training.train.gzip.pickle
+        # daily_slice_testing.train.gzip.pickle
         # |ts_code|x1|x2|...|xn|y|
         file_name = 'daily_slice.stock.gzip.pickle'
         file_system.write(data, date=date, file_name=file_name)
