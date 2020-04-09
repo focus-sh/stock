@@ -3,7 +3,7 @@ import logging
 from lib.datetime import datetime
 from lib.executor import executor
 from lib.file.tensorflow_slice import TensorflowSliceFileSystem
-from svc.train.data_picker import select_valid_record, select_30d_up_50p_true_record
+from svc.train.data_picker import select_30d_up_50p_true_record, select_30d_up_50p_false_record
 from svc.train.distribution import uniform_distribution
 from svc.train.time_series import TimeSeries
 
@@ -25,90 +25,62 @@ class Selection:
     ):
         self.id = id
         self.file_system = TensorflowSliceFileSystem(model_name=model_name)
-        self.file_name_list = [f'{self.id}_train.index.gzip.pickle', f'{self.id}_test.index.gzip.pickle']
+        self.file_name = f'{self.id}.index.gzip.pickle'
         self.time_series = time_series
         self.selector = selector
 
     def do_select(self):
         # 用于记录当前数据的差值（比如某个时间点的数据不足的时候，则将差值数据保存下来，尝试从后面数据中不足
-        total_debt, train_debt, test_debt = 0, 0, 0
+        total_debt = 0
         for row in self.time_series:
             date = datetime.str_to_date(row['date'])
-            if not self.already_exist(date=date):
+            if not self.file_system.exist(segment=datetime.date_to_str(date), file_name=self.file_name):
                 # 需要获取的数为分布函数中要求的总数加上到目前为止还欠下的差值
                 required_total_cnt = row['total'] + total_debt
-                required_train_cnt = row['train'] + train_debt
-                required_test_cnt = row['test'] + test_debt
                 data = self.selector(date=date, total=required_total_cnt)
 
                 actual_total_cnt = data.shape[0]
 
-                (actual_train_cnt, actual_test_cnt) = self.redistribute(
-                    actual_total_cnt=actual_total_cnt,
-                    required_train_cnt=required_train_cnt,
-                    required_test_cnt=required_test_cnt
-                )
-
                 # write to training file
                 self.file_system.write(
-                    data=data.iloc[0:actual_train_cnt, :],
+                    data=data,
                     segment=datetime.date_to_str(date),
-                    file_name=self.file_name_list[0]
+                    file_name=self.file_name
                 )
-                # write to test file
-                self.file_system.write(
-                    data=data.iloc[actual_train_cnt:actual_total_cnt, :],
-                    segment=datetime.date_to_str(date),
-                    file_name=self.file_name_list[1]
-                )
-
                 # 更新还欠的数据
                 total_debt = required_total_cnt - actual_total_cnt
-                train_debt = required_train_cnt - actual_train_cnt
-                test_debt = required_test_cnt - actual_test_cnt
         if total_debt > 0:
-            logging.warning(f"抽样数据不足，总计数据差值为，total_debt={total_debt}, train_debt={train_debt}, test_debt={test_debt}")
-
-    def already_exist(self, date):
-        for _, file_name in enumerate(self.file_name_list):
-            if not self.file_system.exist(segment=datetime.date_to_str(date), file_name=file_name):
-                return False
-            return True
-
-    def redistribute(self, actual_total_cnt, required_train_cnt, required_test_cnt):
-        """
-        将实际得到的数据，根据原来train/test的分配比例，重新分配
-        """
-        if actual_total_cnt >= required_train_cnt + required_test_cnt:
-            return required_train_cnt, required_test_cnt # 数据充足，直接返回
-
-        ratio = required_train_cnt / (required_train_cnt + required_test_cnt)
-        return int(actual_total_cnt * ratio), actual_total_cnt - int(actual_total_cnt * ratio)
-
-    """
-    构造落地数据的文件名称
-    """
-    def get_file_name(self, key):
-        return f'{key}.index.gzip.pickle'
+            logging.warning(f"抽样数据不足，总计数据差值为，total_debt={total_debt}")
 
 
 if __name__ == '__main__':
     executor
     time_series = TimeSeries(
-        begin_date=datetime.str_to_date('20180320'),
-        end_date=datetime.str_to_date('20200320'),
-        total=10000,
-        train_percent=0.8,
+        begin_date=datetime.str_to_date('20180101'),
+        end_date=datetime.str_to_date('20180331'),
+        total=500,
         distribution=uniform_distribution,
     )
 
     general_selection = Selection(
-        id='30d_up_50p',
+        id='30d_up_50p_false',
         model_name='general_model',
         time_series=time_series,
-        selector=select_valid_record,
+        selector=select_30d_up_50p_false_record,
     )
     general_selection.do_select()
 
+    general_selection = Selection(
+        id='30d_up_50p_true',
+        model_name='general_model',
+        time_series=time_series,
+        selector=select_30d_up_50p_true_record,
+    )
+    general_selection.do_select()
 
+    file_system = TensorflowSliceFileSystem(model_name='general_model')
+    index_data = file_system.read(segment='20180102', file_name='30d_up_50p_false.index.gzip.pickle')
+    print(index_data)
 
+    index_data = file_system.read(segment='20180102', file_name='30d_up_50p_true.index.gzip.pickle')
+    print(index_data)

@@ -7,15 +7,15 @@ from model.ts_pro_bar import ts_pro_bar
 
 class ProBarSliceCache:
     def __init__(self):
-        self.file_name = 'daily_slice.stock.gzip.pickle'
+        self.file_name = 'index.gzip.pickle'
 
     def refresh_cache(self):
         for row in Iterator(pro_trade_cal):
             date = datetime.str_to_date(row['cal_date'])
-            if not file_system.exist(date=date, file_name=self.file_name):
+            if not file_system.exist(segment=datetime.date_to_str(date), file_name=self.file_name):
                 data = ts_pro_bar.select_valid_record_by_date(date=date)
                 data.rename(columns={'trade_date': 'date'}, inplace=True)
-                file_system.write(data=data, date=date, file_name=self.file_name)
+                file_system.write(data=data, segment=datetime.date_to_str(date), file_name=self.file_name)
 
 
 pro_bar_slice_cache = ProBarSliceCache()

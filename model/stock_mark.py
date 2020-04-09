@@ -19,6 +19,10 @@ WHERE
     trade_date = %s AND type = %s
         AND mark = %s'''
 
+        self.select_by_stock_and_type_where_clause = f'''
+WHERE
+    ts_code = %s AND type = %s'''
+
     def insert(self, data):
         mysql.insert(
             data=data,
@@ -26,6 +30,10 @@ WHERE
             primary_keys=self.primary_keys,
             indexes=self.indexes
         )
+
+    def select_by_stock_and_type(self, ts_code, type):
+        sql = self.select_sql + self.select_by_stock_and_type_where_clause
+        return self.select(sql, [ts_code, type])
 
     def select_by_data_and_type_and_mark(self, date, type, mark):
         sql = self.select_sql + self.select_by_data_and_type_and_mark_where_clause

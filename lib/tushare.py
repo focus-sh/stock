@@ -30,7 +30,7 @@ class TuShare:
         self.save(
             data=data,
             appendix=appendix,
-            table_name=table_name or self.get_table_name(svc_name=svc_name),
+            table_name=table_name or self.get_table_name(api=api, svc_name=svc_name),
             primary_keys=primary_keys,
             indexes=indexes
         )
@@ -54,7 +54,8 @@ class TuShare:
         mysql.insert(data, table_name, primary_keys, indexes)
 
     @staticmethod
-    def get_table_name(prefix='ts_', svc_name=None):
+    def get_table_name(api=ts, svc_name=None):
+        prefix = 'ts_' if api == ts else 'pro_'
         table_name = svc_name
         if table_name.startswith('get_'):
             table_name = table_name.replace('get_', '')

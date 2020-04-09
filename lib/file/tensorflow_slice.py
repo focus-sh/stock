@@ -4,55 +4,34 @@ from lib.executor import executor
 from lib.file.tensorflow_model import TensorflowModelFileSystem
 import pandas as pd
 
-class FilesIterator:
+
+class BaseIterator:
     """
-    分片文件遍历器
-    file_system：文件系统
-    file_name_list：需要查询的文件名称列表
+    分片遍历器
     """
     def __init__(
             self,
-            file_system,
-            file_name_list,
+            file_system
     ):
         self.file_system = file_system
-        self.file_name_list = file_name_list
         self.slices = []
         self.cur_index = -1
 
-    class Slice:
-        def __init__(
-                self,
-                segment,
-                data_list
-        ):
-            self.segment = segment
-            self.data_list = data_list
-
     def __iter__(self):
+        """
+        初始化文件遍历器，删除其中的.DS_Store文件夹（该文件是MacOS的系统文件）
+        :return:
+        """
         self.slices = os.listdir(self.file_system.base_dir)
+        if '.DS_Store' in self.slices:
+            self.slices.remove('.DS_Store')
         self.cur_index = -1
         return self
 
-    def __next__(self) :
-        self.cur_index += 1
-        if self.cur_index >= len(self.slices):
-            raise StopIteration
 
-        data_list = []
-        for _, file_name in enumerate(self.file_name_list):
-            segment = self.slices[self.cur_index]
-            file_data = self.file_system.read(
-                segment=segment,
-                file_name=file_name
-            )
-            data_list.append(file_data)
-        return self.Slice(segment, data_list)
-
-
-class FileIterator:
+class FileIterator(BaseIterator):
     """
-    分片文件遍历器
+    单个嗯见的分片遍历器
     file_system：文件系统
     file_name：文件名称
     """
@@ -61,25 +40,51 @@ class FileIterator:
             file_system,
             file_name,
     ):
-        self.file_system = file_system
+        super(FileIterator, self).__init__(file_system=file_system)
         self.file_name = file_name
-        self.slices = []
-        self.cur_index = -1
-
-    def __iter__(self):
-        self.slices = os.listdir(self.file_system.base_dir)
-        self.cur_index = -1
-        return self
 
     def __next__(self) -> pd.DataFrame:
         self.cur_index += 1
         if self.cur_index >= len(self.slices):
             raise StopIteration
 
-        return self.file_system.read(
-            segment=self.slices[self.cur_index],
+        segment = self.slices[self.cur_index]
+        content = self.file_system.read(
+            segment=segment,
             file_name=self.file_name
         )
+
+        return segment, content
+
+
+class FilesIterator(BaseIterator):
+    """
+    多文件的分片遍历器
+    file_system：文件系统
+    file_name_list：需要查询的文件名称列表
+    """
+    def __init__(
+            self,
+            file_system,
+            file_name_list,
+    ):
+        super(FilesIterator, self).__init__(file_system=file_system)
+        self.file_name_list = file_name_list
+
+    def __next__(self):
+        self.cur_index += 1
+        if self.cur_index >= len(self.slices):
+            raise StopIteration
+
+        content = []
+        for _, file_name in enumerate(self.file_name_list):
+            segment = self.slices[self.cur_index]
+            file_data = self.file_system.read(
+                segment=segment,
+                file_name=file_name
+            )
+            content.append(file_data)
+        return segment, content
 
 
 class TensorflowSliceFileSystem(TensorflowModelFileSystem):
@@ -109,6 +114,5 @@ file_system = TensorflowSliceFileSystem()
 if __name__ == '__main__':
     executor
     file_system = TensorflowSliceFileSystem(model_name='general_model')
-    iterator = FileIterator(file_system=file_system, file_name='train.index.gzip.pickle')
-    for data in iterator:
-        print(data)
+    data = file_system.read(segment='20180320', file_name='NO SUCH FIILE')
+    print(data)

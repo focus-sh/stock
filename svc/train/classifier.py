@@ -26,19 +26,25 @@ class Classifier:
     def classify(self):
         total_data = self.total_file_system.read(file_name=self.file_name)
         classification = total_data[self.filter_key].unique()
-        for ts_code in classification:
-            stock_data = total_data[total_data[self.filter_key].isin([ts_code])]
-            self.classifier_file_system.write(data=stock_data, segment=ts_code, file_name=self.file_name)
+        for filter_value in classification:
+            if not self.classifier_file_system.exist(segment=filter_value, file_name=self.file_name):
+                stock_data = total_data[total_data[self.filter_key].isin([filter_value])].copy()
+                stock_data = stock_data.sort_values(by='trade_date').reset_index(drop=True)
+                self.classifier_file_system.write(data=stock_data, segment=filter_value, file_name=self.file_name)
 
 
 if __name__ == '__main__':
     executor
     classifier = Classifier(
         model_name='general_model',
-        file_name='train.index.gzip.pickle',
+        file_name='30d_up_50p.index.gzip.pickle',
         slice_key='stock',
         filter_key='ts_code',
     )
     classifier.classify()
+
+    file_system = TensorflowSliceFileSystem(model_name='general_model', slice_key='stock')
+    data = file_system.read(segment='002137.SZ', file_name='30d_up_50p.index.gzip.pickle')
+    print(data)
 
 

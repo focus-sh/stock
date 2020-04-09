@@ -26,12 +26,12 @@ class Merger:
         """
         归并所有文件数据
         """
-        for item in self.iterator:
-            segment = item.segment
-            result = pd.DataFrame({})
-            for _, data in enumerate(item.data_list):
-                result = pd.concat([result, data], ignore_index=True)
-            self.file_system.write(data=result, segment=segment, file_name=self.target_file_name)
+        for segment, content in self.iterator:
+            if not self.file_system.exist(segment=segment, file_name=self.target_file_name):
+                result = pd.DataFrame({})
+                for _, data in enumerate(content):
+                    result = pd.concat([result, data], ignore_index=True)
+                self.file_system.write(data=result, segment=segment, file_name=self.target_file_name)
 
 
 if __name__ == '__main__':
@@ -39,8 +39,12 @@ if __name__ == '__main__':
     merger = Merger(
         model_name='general_model',
         slice_key='date',
-        file_name_list=['train.index.gzip.pickle', 'test.index.gzip.pickle'],
-        target_file_name='merged.index.gzip.pickle',
+        file_name_list=['30d_up_50p_false.index.gzip.pickle', '30d_up_50p_true.index.gzip.pickle'],
+        target_file_name='30d_up_50p.index.gzip.pickle',
     )
 
     merger.merge()
+
+    file_system = TensorflowSliceFileSystem(model_name='general_model')
+    data = file_system.read(segment='20180102', file_name='30d_up_50p.index.gzip.pickle')
+    print(data)

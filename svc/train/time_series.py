@@ -11,7 +11,6 @@ class TimeSeries:
     begin_date：开始时间点，日期类型，包含
     end_date：结束时间点，日期类型，包含
     total：样本总量，默认1万
-    train_percent：各分量的比例，列表，累计总和为1（100%）,默认为[0.5, 0.5]
     distribution：时间序列上的分布函数（离散函数）
     """
     def __init__(
@@ -19,7 +18,6 @@ class TimeSeries:
             begin_date,  # 时间序列开始时间
             end_date,  # 时间序列结束时间
             total=10000,  # 总数据量，默认为10000
-            train_percent=0.8,  # 训练样本的总量，默认训练样本占总样本数的80%，其余的为测试样本
             distribution=uniform_distribution,  # 抽样分布函数，默认为均匀分布
     ):
         self.begin_date = begin_date
@@ -34,8 +32,6 @@ class TimeSeries:
 
         trade_cal.rename(columns={'cal_date': 'date'}, inplace=True)
         self.time_series = trade_cal[['date', 'total']].copy()
-        self.time_series['train'] = (self.time_series['total'] * train_percent).round().astype('int')
-        self.time_series['test'] = self.time_series['total'] - self.time_series['train']
 
     def __iter__(self):
         self.row_index = 0
@@ -55,7 +51,6 @@ if __name__ == '__main__':
         begin_date=datetime.date(2018, 3, 20),
         end_date=datetime.date(2020, 3, 20),
         total=40000,
-        train_percent=0.9,
         distribution=uniform_distribution,
     )
     print(time_series.time_series.head(10))
