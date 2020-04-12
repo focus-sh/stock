@@ -2,6 +2,7 @@ from datetime import datetime
 
 from lib.executor import executor
 from job.job import Job
+from lib.tushare import tushare
 
 
 class DailySync(Job):
@@ -34,6 +35,16 @@ class DailySync(Job):
                     'date': date.strftime("%Y%m%d")
                 },
                 "primary_keys": ["date", "code"]
+            }, {
+                "api": tushare.pro,
+                "svc_name": 'daily_basic',
+                "params": {
+                    'kwargs': {
+                        'trade_date': date.strftime("%Y%m%d"),
+                        'ts_code': ''
+                    }
+                },
+                "primary_keys": ["ts_code", "trade_date"]
             }
         ]
 

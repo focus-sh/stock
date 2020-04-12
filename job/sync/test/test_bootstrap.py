@@ -47,4 +47,7 @@ class TestDownloadProBar(unittest.TestCase):
         start_date = bootstrap.calculate_start_date(stock, list_date)
         self.assertEqual(start_date, '20000303')
 
+    def test_sync_his_daily_basic(self):
+        bootstrap.sync_his_daily_basic()
+
 

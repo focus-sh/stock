@@ -1,6 +1,6 @@
 from lib.mysql import mysql
 from lib.pandas import pandas
-
+import pandas as pd
 
 class Model:
 
@@ -25,3 +25,4 @@ class Model:
             subset=self.primary_keys,
             keep='last'
         )
+

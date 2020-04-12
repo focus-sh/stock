@@ -6,6 +6,7 @@ from lib.file.tensorflow_slice import file_system
 from lib.iterator import Iterator
 from lib.tushare import tushare
 from model.pro_stock_basic import pro_stock_basic
+from model.pro_trade_cal import pro_trade_cal
 from model.ts_pro_bar import ts_pro_bar
 
 
@@ -18,7 +19,7 @@ class Bootstrap(Job):
         self.sync(**kwargs)
         # 同步历史交易数据
         self.sync_his_data(**kwargs)
-
+        self.sync_his_daily_basic(**kwargs)
         # 刷新本地缓存的日切股票清单
         pro_bar_slice_cache.refresh_cache()
 
@@ -28,6 +29,21 @@ class Bootstrap(Job):
                 ts_code=row['ts_code'],
                 list_date=row['list_date'],
                 today=kwargs['date']
+            )
+
+    def sync_his_daily_basic(self, **kwargs):
+        for row in Iterator(pro_trade_cal):
+            tushare.download_data(
+                api=tushare.pro,
+                svc_name='daily_basic',
+                params={
+                    'kwargs': {
+                        'trade_date': row['cal_date'],
+                        'ts_code': ''
+                    }
+                },
+                primary_keys=["ts_code", "trade_date"],
+                indexes=['ts_code', 'trade_date']
             )
 
     def sync_ts_pro_bar(self, ts_code, list_date, today):

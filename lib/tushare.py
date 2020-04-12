@@ -1,4 +1,5 @@
 import logging
+from urllib.error import HTTPError
 
 from lib.mysql import mysql
 import tushare as ts
@@ -26,14 +27,17 @@ class TuShare:
 
     def download_data(self, api=ts, svc_name=None, params=None, appendix={}, table_name=None, primary_keys=[], indexes=[]):
         logging.info(f'Downloading data from service<{svc_name}> with params<{params}> and keys<{primary_keys}>')
-        data = self.call_remote(api=api, svc_name=svc_name, params=params)
-        self.save(
-            data=data,
-            appendix=appendix,
-            table_name=table_name or self.get_table_name(api=api, svc_name=svc_name),
-            primary_keys=primary_keys,
-            indexes=indexes
-        )
+        try:
+            data = self.call_remote(api=api, svc_name=svc_name, params=params)
+            self.save(
+                data=data,
+                appendix=appendix,
+                table_name=table_name or self.get_table_name(api=api, svc_name=svc_name),
+                primary_keys=primary_keys,
+                indexes=indexes
+            )
+        except HTTPError:
+            logging.exception('Failed to download tushare data from remote service.')
         logging.info(f'Finish downloading data from service[{svc_name}]')
 
     @staticmethod
